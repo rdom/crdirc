@@ -3,6 +3,7 @@
 /macro/rdata
 /macro/data
 *.so
+*.pcm
 *.d
 AutoDict*
 *.root
