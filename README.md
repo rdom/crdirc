@@ -111,8 +111,11 @@ with event display:
 ```
 
 ## Requirments
--geant4
--QT4
+```
+root 6
+geant4
+QT4
+```
 
 ## Installation
 ```
