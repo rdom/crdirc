@@ -1,0 +1,130 @@
+#!/bin/bash
+
+show_help(){
+  help="  NAME
+    ba_scan - script to run sim/reco for prtdirc
+
+  SYNOPSIS
+    ba_scan [OPTION]
+
+  DESCRIPTION 
+     -r 
+        run type
+        0 - run lut
+        1 - run sim
+        2 - run reco
+        3 - run sim + reco
+        4 - run lut + sim + reco
+
+     -j
+        number of threads 
+     -q 
+        run -a option on claster 
+        one needs to be logged in on hera 
+        not implemented 
+     -e 
+        # of events per thread
+     -s 
+        angle step 
+     -v 
+        verbose level
+        0 - print nothing (default)
+        1 - print text messages
+        2 - draw plots
+     -t 
+        test value
+     -n 
+        silent run"
+    echo "$help" 
+}
+
+OPTIND=1 
+while getopts "h?r:j:qs:e:v:t:n" opt; do
+    case "$opt" in
+	h|\?)
+            show_help
+            exit 0
+            ;;
+	j)  threads=$OPTARG
+            ;;
+	r)  run=$OPTARG
+            ;;
+	q)  clastermode=1
+            ;;
+	s)  astep=$OPTARG
+            ;;
+	e)  nevents=$OPTARG
+            ;;
+	v)  verbose=$OPTARG
+            ;;
+	t)  test1=$OPTARG
+            ;;
+	n)  silent=1
+            ;;
+    esac
+done
+option=${option:-0}
+nevents=${nevents:-10}
+endEvent=${endEvent:-100000000} 
+threads=${threads:-6}
+astep=${astep:-2}
+run=${run:-0}
+verbose=${verbose:-0}
+test1=${test1:-0}
+silent=${silent:-0}
+
+shift $((OPTIND-1))
+
+
+tseed=$(($(date +%s%N)/1000000-1393400000000))
+printf "====== Run PRTDIRC with $tseed seed base ======\n"
+
+simopt="-h 1 -l 3 -p 7.00 -a 19.66 -phi -0.05 -gz 409.00 -gx 85.00 -gsx 65.00 -gsy 16.30 -z 10.00 -g 2018 -c 2018 -study 401 -x mix_pip -b 1"
+
+if [ ${run} == "0" ]; then
+    ../build/prtdirc  $simopt -s 1 -z 0 -a 180 -x "opticalphoton" -p "3.18 eV" -g 0 -e 1000000  
+    exit
+fi
+
+waitForMe (){
+    while : 
+    do 
+	activth=$(ps aux | grep "[p]rtdirc" | grep "h_b" | wc -l)
+	printf "\r$statusline [$activth] ---- [$(($(date +%s) - start_time)) s] "
+	sleep .1
+	if [ "$activth" -lt "$1" ]; then 
+	    break  
+	fi
+    done
+}  
+
+if [ ${run} == "1" ] || [ ${run} == "3" ] ||  [ ${run} == "4" ]; then
+    mkdir -p hdata
+    start_time=$(date +%s)
+    statusline="GSim"
+    for i in $(eval echo {15..145..${astep}}); do 
+	../build/prtdirc -r $tseed$i -o hdata/h_b$i.root -s 0 $simopt -a $i -e $nevents -v $verbose   > /dev/null  &
+	waitForMe $threads
+    done
+    waitForMe "1"
+    printf "\r$statusline [-] done [$(($(date +%s) - start_time)) s]     \n"
+fi
+
+if [ ${run} == "2" ] || [ ${run} == "3" ] || [ ${run} == "4" ]; then
+    start_time=$(date +%s)
+    statusline="Reco"
+    for i in $(eval echo {15..145..$astep}); do 
+	../build/prtdirc -i hdata/h_b$i.root -u ~/data/jul18/401/lut_beam_401_140S_cs_avr.root -o  hdata/r_b$i.root -s 2 -f 0 -e 0 -tr $test1 -v 1 -h 2 > /dev/null 2> /dev/null &
+	waitForMe $threads
+    done
+    waitForMe "1"
+    printf "\r$statusline [-] done [$(($(date +%s) - start_time)) s]         \n"
+
+    sleep 2
+    # hadd r_spr${tseed}.root r_b${tseed}_*_spr.root
+    # rm r_b${tseed}_*.root 
+fi
+
+
+
+

@@ -1,0 +1,11 @@
+/build
+/data
+/macro/rdata
+/macro/data
+*.so
+*.d
+AutoDict*
+*.root
+*~
+/macro/mcpload.C
+/macro/neighbour/
