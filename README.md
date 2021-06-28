@@ -1,11 +1,11 @@
-##Synopsis
+## Synopsis
 ```
 prtdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
 
 example:
 ./prtdirc -a 40 -l 0 -x "pi+" -p 1 -w 0 -g 0 -e 1
 ```
-##Options
+## Options
 ```
 
 -o    output file name
@@ -100,11 +100,11 @@ example:
 
 ```
 
-##Requirments
+## Requirments
 -geant4
 -QT4
 
-##Installation
+## Installation
 ```
 git clone https://github.com/rdom/crdirc
 git clone https://github.com/rdom/prttools
@@ -117,7 +117,7 @@ make -j4
 ```
 
 
-##Example of script usage from macro folder
+## Example of script usage from macro folder
 ```
 ./prtdirc -study 500 -r 0 -i hits.root -e 10
 ```
