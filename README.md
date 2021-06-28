@@ -11,9 +11,10 @@ example:
 
 with event display:
 ./crdirc -study 500 -r 0 -i hits.root -e 100
+```
 ![alt text](https://github.com/rdom/crdirc/raw/master/pics/event_display.png)
 
-```
+
 ## Options
 ```
 
