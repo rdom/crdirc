@@ -1,9 +1,17 @@
+DIRC simulations with Cosmic Ray generator (CRY 1.7) 
+
+
 ## Synopsis
 ```
-prtdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
+crdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
 
 example:
-./prtdirc -a 40 -l 0 -x "pi+" -p 1 -w 0 -g 0 -e 1
+
+./crdirc -study 500 -r 0 -i hits.root -e 10000000 -b 1
+
+with event display:
+./crdirc -study 500 -r 0 -i hits.root -e 100
+
 ```
 ## Options
 ```
@@ -119,5 +127,5 @@ make -j4
 
 ## Example of script usage from macro folder
 ```
-./prtdirc -study 500 -r 0 -i hits.root -e 10
+root loadlib.C draw_mom.C'("../build/hits.root")'
 ```
