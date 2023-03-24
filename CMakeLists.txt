@@ -31,6 +31,7 @@ include(${Geant4_USE_FILE})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 
+set(CMAKE_CXX_STANDARD 17)
 #----------------------------------------------------------------------------
 # Generate dictionary for root
 ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtRun.h PrtLutNode.h LINKDEF src/PrtLinkDef.h MODULE Prt)
@@ -44,7 +45,6 @@ add_library(Cry SHARED ${cry_sources})
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
-set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fno-trapping-math -ftree-vectorize -fno-math-errno")
 set(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-maybe-uninitialized -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable")
 

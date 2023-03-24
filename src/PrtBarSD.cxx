@@ -60,7 +60,7 @@ G4bool PrtBarSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   G4TouchableHistory *touchable = (G4TouchableHistory *)(step->GetPostStepPoint()->GetTouchable());
   G4ThreeVector lpos = touchable->GetHistory()->GetTopTransform().TransformPoint(gpos);  
   PrtManager::Instance()->getEvent()->setPosition(TVector3(lpos.x(), lpos.y(), lpos.z()));
-  
+  PrtManager::Instance()->getEvent()->setPid(track->GetDynamicParticle()->GetParticleDefinition()->GetPDGEncoding());
   return true;
 }
 

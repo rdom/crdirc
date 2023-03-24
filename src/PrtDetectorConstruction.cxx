@@ -192,8 +192,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fPrizm[1] = 300;
     fPrizm[3] = 50;
     fPrizm[2] = fPrizm[3] + fPrizm[1] * tan(33 * deg);
-    fCenterShift =
-      G4ThreeVector(0.5 * fBar[2] - fOffset, -0.5 * fPrizm[0] + fRun->getBeamX(), -100);
+    fCenterShift =G4ThreeVector(0,0,0);
+      // G4ThreeVector(0.5 * fBar[2] - fOffset, -0.5 * fPrizm[0] + fRun->getBeamX(), -100);
   }
 
   if (fGeomId == 2021) {
@@ -249,7 +249,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   lFront = new G4LogicalVolume(gFront, frontMaterial, "lFront", 0, 0, 0);
 
   G4Box *gTracker1 = new G4Box("gTracker1", 100, 50, 5);
-  G4Box *gTracker2 = new G4Box("gTracker2", 100, 50, 5);
+  G4Box *gTracker2 = new G4Box("gTracker2", 250, 250, 5);
   G4Box *gTracker3 = new G4Box("gTracker3", 200, 200, 5);
   lTracker1 = new G4LogicalVolume(gTracker1, frontMaterial, "lTracker1", 0, 0, 0);
   lTracker2 = new G4LogicalVolume(gTracker2, frontMaterial, "lTracker2", 0, 0, 0);
@@ -259,9 +259,11 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   lEdd = new G4LogicalVolume(gEdd, BarMaterial, "lEdd", 0, 0, 0);
 
   double dircz = -4000;
-  
+
+  if (fRunType == 1) dircz = 0;
+
   // ceiling
-  G4Box *gCeiling = new G4Box("gCeiling", 1500, 1500, 500);
+  G4Box *gCeiling = new G4Box("gCeiling", 1500, 1500, 0.5 * 610);
   lCeiling = new G4LogicalVolume(gCeiling, ConcreteMaterial, "lCeiling", 0, 0, 0);
   
   new G4PVPlacement(0, G4ThreeVector(0, 0, -1000), lCeiling, "wCeiling", lExpHall, false, 0);
@@ -279,7 +281,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
   if (fGeomId == 0 || fRunType == 1) zshift = 0;
   // tilt scan
-  fPrtRot->rotateY((90 - fRun->getTheta()) * deg);
+  fPrtRot->rotateY((-90 - fRun->getTheta()) * deg);
   fPrtRot->rotateX(fRun->getPhi() * deg);
   wDirc = new G4PVPlacement(fPrtRot, dircpos + G4ThreeVector(-zshift, 0, dircz), lDirc, "wDirc",
                             lExpHall, false, 0);

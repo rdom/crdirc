@@ -80,7 +80,7 @@ class PrtLutReco {
   int fgg_i = 0, fgg_ind = 0;
   TString fInputFile;
   TH1F *fHist;
-  TH1F *fHistPi;
+  TH1F *fHistPi, *fAngleDiff;
   TH1F *fHisti;
   TF1 *fFit;
   TF1 *fFunc[5];

@@ -10,7 +10,7 @@ void draw_mom(TString infile = "../build/hits.root") {
   TH1F *hy = new TH1F("t",";detected photons [#];entries [#]",100,0,100);
 
   
-  while (t.next() && t.i() < 10000) {
+  while (t.next() && t.i() < 10E10) {
 
     bool good = t.event()->getT1Position().Z() < -10 && t.event()->getT2Position().Z() < -10;
     // &&
