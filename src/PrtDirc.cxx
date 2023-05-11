@@ -131,6 +131,11 @@ int main(int argc,char** argv)
   }
 
   run->setRunType(runtype);
+
+  // set default value for tracker's positions
+  run->setTest1(1300);
+  run->setTest2(300);
+  run->setTest3(-400);
   
   if(momentum.size()) run->setMomentum(atof(momentum));  
   if(physlist.size()) run->setPhysList(atoi(physlist));

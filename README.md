@@ -103,11 +103,20 @@ with event display:
 -tr    time resolution [ns]
                0.2  (default)  
 
--seed   seed number for the random generator 
+-seed  seed number for the random generator 
 
--b    batch mode
+-b     batch mode
                1    run silent (without GUI)
 
+-t1    position of the tracker #1 relative to the center of radiator bar (@ 90 deg) [mm]
+       1300 (default)      
+
+-t2    position of the tracker #2 relative to the center of radiator bar (@ 90 deg) [mm]
+       300 (default)   
+
+-t3    position of the tracker #3 relative to the center of radiator bar (@ 90 deg) [mm]
+       -400 (default)
+       
 ```
 
 ## Requirments

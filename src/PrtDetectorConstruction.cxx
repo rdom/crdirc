@@ -139,7 +139,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fRadiatorId == 20) {
     fBar[0] = 17.1;
-    fBar[1] = fTest1;
+    fBar[1] = 35;
     fBar[2] = 1224.9;
     fMirror[1] = 180;
   }
@@ -267,9 +267,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   lCeiling = new G4LogicalVolume(gCeiling, ConcreteMaterial, "lCeiling", 0, 0, 0);
   
   new G4PVPlacement(0, G4ThreeVector(0, 0, -1000), lCeiling, "wCeiling", lExpHall, false, 0);
-  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + 1300), lTracker1, "wTracker1", lExpHall, 0, 0);
-  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + 300), lTracker2, "wTracker2", lExpHall, 0, 0);
-  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz - 400), lTracker3, "wTracker3", lExpHall, 0, 0);
+  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + fTest1), lTracker1, "wTracker1", lExpHall, 0, 0);
+  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + fTest2), lTracker2, "wTracker2", lExpHall, 0, 0);
+  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + fTest3), lTracker3, "wTracker3", lExpHall, 0, 0);
 
   // The DIRC
   G4Box *gDirc = new G4Box("gDirc", 250, 200, fBar[2] / 2. + fPrizm[1] + 50);
@@ -347,7 +347,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4Box *gfbox = new G4Box("Fbox", fLens[0] / 2., fLens[1] / 2., fLens[2] / 2.);
 
   if (fLensId == 1) { // 2-layer spherical lens
-    double r1 = 0;    // fTest1
+    double r1 = 0;
     double lensrad1 = (r1 == 0) ? 73.58 : r1;
     double lensMinThikness = 2;
 
@@ -380,8 +380,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fLensId == 334) { // 3-component spherical lens
     double lensMinThikness = 2;
 
-    double r1 = 0; // fTest1;
-    double r2 = 0; // fTest2;
+    double r1 = 0;
+    double r2 = 0;
 
     double lensrad1 = (r1 == 0) ? 47.8 : r1;
     double lensrad2 = (r2 == 0) ? 29.1 : r2;
@@ -413,13 +413,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fLensId == 3) { // 3-component spherical lens
     double lensMinThikness = 2.0;
 
-    double r1 = fTest1;
-    double r2 = fTest2;
-
-    if (fRunType == 6) { // focal plane scan
-      r1 = fTest1;
-      r2 = fTest2;
-    }
+    double r1 = 0;
+    double r2 = 0;
 
     r1 = (r1 == 0) ? 47.80 : r1;
     r2 = (r2 == 0) ? 29.12 : r2;
@@ -465,7 +460,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   if (fLensId == 4) { // Spherical lens with air gap // f =250 , d = , w = 5.7
-    double r1 = 0;    // fTest1;
+    double r1 = 0; 
     double lensrad1 = (r1 == 0) ? 250 : r1;
     double lensMinThikness = 2;
 
@@ -478,7 +473,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   if (fLensId == 5) { // Spherical lens with air gap // f =250 , d = , w = 5.7 // black edges
-    double r1 = 0;    // fTest1
+    double r1 = 0;
     double lensrad1 = (r1 == 0) ? 250 : r1;
     double lensMinThikness = 2;
 
@@ -496,13 +491,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fLensId == 6) { // 3-component cylindrical lens
     double lensMinThikness = 2.0;
 
-    double r1 = 0; // fTest1
-    double r2 = 0; // fTest2
-
-    if (fRunType == 6) { // focal plane scan
-      r1 = fTest1;
-      r2 = fTest2;
-    }
+    double r1 = 0;
+    double r2 = 0;
 
     // RMI lens
     fLens[2] = 13.12;
@@ -554,13 +544,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fLensId == 7) { // 3-component cylindrical lens
     double lensMinThikness = 2.0;
 
-    double r1 = 0; // fTest1
-    double r2 = 0; // fTest2
-
-    if (fRunType == 6) { // focal plane scan
-      r1 = fTest1;
-      r2 = fTest2;
-    }
+    double r1 = 0;
+    double r2 = 0;
 
     // r1 = (r1==0)? 27.45: r1;
     // r2 = (r2==0)? 20.02: r2;
@@ -607,20 +592,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   if (fLensId == 8) { // 3-component cylindrical lens
     double lensMinThikness = 2.0;
-    double r1 = 0; // fTest1
-    double r2 = 0; // fTest2
-
-    if (fRunType == 6) { // focal plane scan
-      r1 = fTest1;
-      r2 = fTest2;
-    }
-
-    // // thickness scan
-    // double d = fTest1
-    // d = (d==0)? 3: d;
-
-    // r1 = (r1==0)? 27.45: r1;
-    // r2 = (r2==0)? 20.02: r2;
+    double r1 = 0;
+    double r2 = 0;
 
     r1 = (r1 == 0) ? 33 : r1;
     r2 = (r2 == 0) ? 25 : r2;
@@ -701,36 +674,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   fPrismShift = G4ThreeVector((fPrizm[2] + fPrizm[3]) / 4. - fPrizm[3] / 2., 0,
                               0.5 * fBar[2] + greased + 0.5 * fPrizm[1] + fLens[2]);
   new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 0);
-
-  if (fGeomId == 5) { // calibration
-    double cheight = 75;
-    double cwidth = 75;
-    double shift = fTest3;
-    G4Trap *gPrizmC = new G4Trap("gPrizmC", cwidth, cheight, cheight, 0.00000000000001);
-    lPrizmC = new G4LogicalVolume(gPrizmC, BarMaterial, "lPrizmC", 0, 0, 0);
-    G4RotationMatrix *xRotC = new G4RotationMatrix();
-    xRotC->rotateX(M_PI / 2. * rad);
-    xRotC->rotateZ(M_PI * rad);
-    G4ThreeVector fPrismShiftC =
-      G4ThreeVector(cheight - cheight / 4. + fPrizm[3] / 2. + tan(45 * M_PI / 180.) * shift, 0,
-                    fBar[2] / 2. + cheight / 2. + fLens[2] + shift);
-    new G4PVPlacement(xRotC, fPrismShiftC, lPrizmC, "wPrizmC", lDirc, false, 0);
-  }
-
-  // Scaning plain
-  if (false) {
-    double shift = fTest3;
-    if (shift < 935 - fPrizm[1]) {
-      G4Box *gScan = new G4Box("gScan", 350, 100, 0.01);
-      G4LogicalVolume *lScan = new G4LogicalVolume(gScan, BarMaterial, "lScan", 0, 0, 0);
-      new G4PVPlacement(0, G4ThreeVector(0, 0, shift), lScan, "wScan", lBar, false, 0);
-    } else {
-      G4Box *gScan = new G4Box("gScan", 350, 0.01, 100);
-      G4LogicalVolume *lScan = new G4LogicalVolume(gScan, BarMaterial, "lScan", 0, 0, 0);
-      new G4PVPlacement(0, G4ThreeVector(0, 935 - shift - 150, 0), lScan, "wScan", lPrizm, false,
-                        0);
-    }
-  }
 
   G4Box *gMcp;
   G4Box *gPixel;
