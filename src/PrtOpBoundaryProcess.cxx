@@ -1,4 +1,6 @@
 #include "PrtOpBoundaryProcess.h"
+#include "G4TouchableHistory.hh"
+#include "G4TransportationManager.hh"
 
 #include "PrtManager.h"
 
