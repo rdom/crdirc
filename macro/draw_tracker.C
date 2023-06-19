@@ -4,7 +4,7 @@ void draw_tracker(TString infile = "../build/hits.root") {
 
   PrtTools t(infile);
 
-  TH2F *hTracker1 = new TH2F("hTracker", "hTracker", 200, 0, 100, 200, 0, 100);
+  TH2F *hTracker1 = new TH2F("hTracker", "hTracker", 200, -100, 100, 200, -100, 100);
 
   while (t.next()) {
     // get position vectors
