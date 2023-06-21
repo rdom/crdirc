@@ -248,10 +248,10 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4Box *gFront = new G4Box("gFront", 200., 200., 5);
   lFront = new G4LogicalVolume(gFront, frontMaterial, "lFront", 0, 0, 0);
 
-  double traker1_x = 100;  
-  double traker1_y = 50;
-  double traker3_x = 250;  
-  double traker3_y = 250;
+  double traker1_x = 200;  
+  double traker1_y = 100;
+  double traker3_x = 500;  
+  double traker3_y = 500;
 
   G4Box *gTracker1 = new G4Box("gTracker1", 0.5 * traker1_x, 0.5 * traker1_y, 5);
   G4Box *gTracker2 = new G4Box("gTracker2", 0.5 * traker1_x, 0.5 * traker1_y, 5);
