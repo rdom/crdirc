@@ -28,8 +28,8 @@ bool PrtTrackerSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   G4Track *track = step->GetTrack();
   G4ThreeVector vmom = track->GetMomentum();
 
-  if (track->GetParentID() == 0) { // no secondaries
-
+  // if (track->GetParentID() == 0)  // no secondaries
+  {
     TString aname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
     // TString bname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
     // std::cout << aname<<" "<<step->GetPostStepPoint()->GetPhysicalVolume() << " gpos " << gpos <<

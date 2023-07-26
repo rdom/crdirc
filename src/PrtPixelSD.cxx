@@ -705,5 +705,8 @@ void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
     std::cout << " : " << PrtManager::Instance()->getEvent()->getHits().size() << std::endl;
 
   good = (good && e->getT3Position().Z() < -1 && e->getHits().size() > 0);
+  
+  // if (e->getHits().size() > 0) std::cout << e->getT1Position().Z() <<" good " <<  e->getT2Position().Z() << std::endl;
+  
   if (good) PrtManager::Instance()->fill();
 }
