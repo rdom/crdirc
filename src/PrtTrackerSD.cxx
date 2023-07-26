@@ -27,19 +27,24 @@ bool PrtTrackerSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   TVector3 vgpos = TVector3(gpos.x(),gpos.y(),gpos.z());
   G4Track *track = step->GetTrack();
   G4ThreeVector vmom = track->GetMomentum();
-  
-  TString aname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
-  // TString bname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
-  // std::cout << aname<<" "<<step->GetPostStepPoint()->GetPhysicalVolume() << " gpos " << gpos << std::endl;
 
-  if (aname == "wTracker1") PrtManager::Instance()->getEvent()->setT1Position(vgpos);
-  else if (aname == "wTracker2") {
-    PrtManager::Instance()->getEvent()->setT2Position(vgpos);
-    PrtManager::Instance()->getEvent()->setMomentum(TVector3(vmom.x(), vmom.y(), vmom.z()));
-    double time = step->GetPreStepPoint()->GetGlobalTime();
-    PrtManager::Instance()->getEvent()->setTime(time);
-  } else if (aname == "wTracker3") {
-    PrtManager::Instance()->getEvent()->setT3Position(vgpos);
+  if (track->GetParentID() == 0) { // no secondaries
+
+    TString aname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+    // TString bname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+    // std::cout << aname<<" "<<step->GetPostStepPoint()->GetPhysicalVolume() << " gpos " << gpos <<
+    // std::endl;
+
+    if (aname == "wTracker1") {
+      PrtManager::Instance()->getEvent()->setT1Position(vgpos);
+    } else if (aname == "wTracker2") {
+      PrtManager::Instance()->getEvent()->setT2Position(vgpos);
+      PrtManager::Instance()->getEvent()->setMomentum(TVector3(vmom.x(), vmom.y(), vmom.z()));
+      double time = step->GetPreStepPoint()->GetGlobalTime();
+      PrtManager::Instance()->getEvent()->setTime(time);
+    } else if (aname == "wTracker3") {
+      PrtManager::Instance()->getEvent()->setT3Position(vgpos);
+    }
   }
 
   return true;
