@@ -13,7 +13,8 @@
 #include "PrtRunAction.h"
 #include "PrtManager.h"
 
-PrtTrackerSD::PrtTrackerSD(const G4String &name, const G4String &hitsCollectionName, G4int nofCells) : G4VSensitiveDetector(name) {
+PrtTrackerSD::PrtTrackerSD(const G4String &name, const G4String &hitsCollectionName, G4int nofCells)
+  : G4VSensitiveDetector(name) {
   collectionName.insert(hitsCollectionName);
 }
 
@@ -24,11 +25,11 @@ void PrtTrackerSD::Initialize(G4HCofThisEvent *hce) {}
 bool PrtTrackerSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 
   G4ThreeVector gpos = step->GetPreStepPoint()->GetPosition();
-  TVector3 vgpos = TVector3(gpos.x(),gpos.y(),gpos.z());
+  TVector3 vgpos = TVector3(gpos.x(), gpos.y(), gpos.z());
   G4Track *track = step->GetTrack();
   G4ThreeVector vmom = track->GetMomentum();
 
-  // if (track->GetParentID() == 0)  // no secondaries
+  if (track->GetParentID() == 0) // no secondaries
   {
     TString aname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
     // TString bname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();

@@ -31,7 +31,8 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
   }
 
   G4Track *track = step->GetTrack();
-
+  if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) return;
+ 
   // int parentId = track->GetParentID();  
   // std::cout<<"parentId   "<<parentId <<std::endl;
   // std::cout<<"length  "<<track->GetTrackLength() << " step num "<< track->GetCurrentStepNumber()
@@ -41,10 +42,11 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
     track->SetTrackStatus(fStopAndKill);
   }
   
-  if (fRunType == 11 || fRunType == 1) {
-    TString aname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
-    TString bname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+  TString aname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+  TString bname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
 
+
+  if (fRunType == 11 || fRunType == 1) {  
     if (fRunType == 11 && aname == "wBar" && bname == "wOpticalGrease") {
       G4ThreeVector dir = step->GetPreStepPoint()->GetMomentum();
       TVector3 v(dir.x(), dir.y(), dir.z());
@@ -58,6 +60,8 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
       track->SetTrackStatus(fStopAndKill);
     }
   }
+ 
+  if (aname == "wMcp" && bname == "wPixel") track->SetTrackStatus(fStopButAlive);
 
   // if(aname=="Bar" && bname=="ExpHall" ) track->SetTrackStatus(fStopAndKill);
   // if(step->GetPreStepPoint()->GetPosition().z()>1200 ) track->SetTrackStatus(fStopAndKill);
