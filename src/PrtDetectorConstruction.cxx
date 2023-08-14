@@ -186,7 +186,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
       G4ThreeVector(0.5 * fBar[2] - fOffset, -0.5 * fPrizm[0] + fRun->getBeamX(), -100);
   }
 
-  if (fGeomId == 2018) {
+  if (fGeomId == 2018 || fGeomId == 2) {
     fOffset = 146;
     fPrizm[0] = 175;
     fPrizm[1] = 300;
@@ -300,7 +300,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   // radiator covered with grease
   double greased = 0 * mm;
-  if (fGeomId < 2017 && fRunType != 6) {
+  if (fGeomId == 2017 && fRunType != 6) {
     greased = 1.5 * mm;
     if (fLensId == 0) greased = 0.5 * mm;
     G4Box *gOpticalGreased =
@@ -655,6 +655,28 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   } else {
     fLens[2] = 0;
+  }
+
+  if (fGeomId == 2) { // second bar
+    double barshift = radiatorStepX + 60;
+
+    new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, 0), lBar, "wBar", lDirc, false, 1);
+
+    double greasew = 0.1 * mm;
+    double ts = 0.5 * fBar[2] + greased - greasew;
+    new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, ts + 0.5 * fLens[2]), lLens1,
+                      "wLens1", lDirc, false, 1);
+    new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, ts + 0.5 * fLens[2]), lLens2,
+                      "wLens2", lDirc, false, 1);
+    new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, ts + 0.5 * fLens[2]), lLens3,
+                      "wLens3", lDirc, false, 1);
+
+    new G4PVPlacement(
+      0, G4ThreeVector(radiatorStepY, barshift, 0.5 * fBar[2] + greased + 0.5 * greasew),
+      lOpticalGrease, "wOpticalGrease", lDirc, false, 0);
+
+    new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, -fBar[2] / 2. - fMirror[2] / 2.),
+                      lMirror, "wMirror", lDirc, false, 0);
   }
 
   if (fRun->getStudy() == 430) {
