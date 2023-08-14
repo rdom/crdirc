@@ -287,7 +287,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fGeomId == 0 || fRunType == 1) zshift = 0;
   // tilt scan
   fPrtRot->rotateY((-90 - fRun->getTheta()) * deg);
-  fPrtRot->rotateX(fRun->getPhi() * deg);
+  fPrtRot->rotateX((180 + fRun->getPhi()) * deg);
+
   wDirc = new G4PVPlacement(fPrtRot, dircpos + G4ThreeVector(-zshift, 0, dircz), lDirc, "wDirc",
                             lExpHall, false, 0);
 
