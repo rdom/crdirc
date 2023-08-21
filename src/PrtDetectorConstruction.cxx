@@ -663,7 +663,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, 0), lBar, "wBar", lDirc, false, 1);
 
     double greasew = 0.1 * mm;
-    double ts = 0.5 * fBar[2] + greased - greasew;
+    double ts = 0.5 * fBar[2] + greased;// - greasew;
     new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, ts + 0.5 * fLens[2]), lLens1,
                       "wLens1", lDirc, false, 1);
     new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, ts + 0.5 * fLens[2]), lLens2,
@@ -672,7 +672,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
                       "wLens3", lDirc, false, 1);
 
     new G4PVPlacement(
-      0, G4ThreeVector(radiatorStepY, barshift, 0.5 * fBar[2] + greased + 0.5 * greasew),
+      0, G4ThreeVector(radiatorStepY, barshift, 0.5 * fBar[2] + greased - 0.5 * greasew),
       lOpticalGrease, "wOpticalGrease", lDirc, false, 0);
 
     new G4PVPlacement(0, G4ThreeVector(radiatorStepY, barshift, -fBar[2] / 2. - fMirror[2] / 2.),
@@ -1358,6 +1358,7 @@ void PrtDetectorConstruction::SetVisualization() {
   lMirror->SetVisAttributes(waMirror);
 
   G4VisAttributes *waTracker = new G4VisAttributes(G4Colour(0.9, 0.4, 0.8));
+  // waTracker->SetForceWireframe(true);
   lTracker1->SetVisAttributes(waTracker);
   lTracker2->SetVisAttributes(waTracker);
   lTracker3->SetVisAttributes(waTracker);

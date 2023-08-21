@@ -169,6 +169,26 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     }
   }
 
+  // if(anEvent->GetEventID() == 0){ // add custom tracks
+  //   fParticleGun->SetParticleDefinition(fParticle[1]);
+  //   fParticleGun->SetParticleEnergy(4 * GeV);
+  //   fParticleGun->SetParticlePosition(G4ThreeVector(0, 0, 0));
+  //   G4ThreeVector v(0, 0, 1);
+  //   v.setTheta(178 * deg);
+  //   v.setPhi(2 *deg);
+  //   fParticleGun->SetParticleMomentumDirection(v);
+  //   fParticleGun->GeneratePrimaryVertex(anEvent);
+
+  //   fParticleGun->SetParticleDefinition(fParticle[1]);
+  //   fParticleGun->SetParticleEnergy(4 * GeV);
+  //   fParticleGun->SetParticlePosition(G4ThreeVector(0, 0, 0));
+  //   G4ThreeVector v2(0, 0, 1);
+  //   v2.setTheta(178 * deg);
+  //   v2.setPhi(-185 *deg);
+  //   fParticleGun->SetParticleMomentumDirection(v2);
+  //   fParticleGun->GeneratePrimaryVertex(anEvent);
+  // }
+
   if (fRun->getRunType() == 1) { // LUT generation
 
     fParticleGun->SetParticlePosition(G4ThreeVector(fRun->getPrismStepY(), //+5-10*G4UniformRand(),
