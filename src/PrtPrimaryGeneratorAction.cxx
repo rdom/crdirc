@@ -128,8 +128,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   PrtManager::Instance()->addEvent(PrtEvent());
 
   int pdg = fRun->getPid();
-  std::cout << "pdg " << pdg << std::endl;
-
   if (fRun->getRunType() == 0) {
 
     if (pdg == 1000) { // cry particle source
