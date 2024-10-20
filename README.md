@@ -86,6 +86,7 @@ with event display:
 -x    particle type
               "cry" (cosmic ray library, default)
               "pi+"
+              "mu-"
               "proton"
               "kaon+"
                  ...
