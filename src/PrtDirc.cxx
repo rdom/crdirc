@@ -49,11 +49,11 @@ int main(int argc,char** argv)
 #endif
   TApplication theApp("App", 0, 0);
 
-  G4String macro, events, geometry, radiator, physlist, session, geomTheta, geomPhi,
-    batchmode, lensId, particle = "mix_pip", momentum, testVal1, testVal2, testVal3, prismStepX,
+  G4String macro, events, geometry, radiator, session, geomTheta, geomPhi,
+    batchmode, lensId, particle = "cry", momentum, testVal1, testVal2, testVal3, prismStepX,
     prismStepY, beamZ, beamX, timeSigma, beamDimension, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
-  G4int firstevent(0), runtype(0), study(0), fid(0), verbose(0);
+  G4int  physlist(0), pdgid(1000),firstevent(0), runtype(0), study(0), fid(0), verbose(0);
 
   G4long myseed = 0;
   for ( G4int i=1; i<argc; i=i+2 ) {
@@ -74,7 +74,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-l" ) lensId    = argv[i+1];
     else if ( G4String(argv[i]) == "-x" ) particle  = argv[i+1];
     else if ( G4String(argv[i]) == "-p" ) momentum  = argv[i+1];
-    else if ( G4String(argv[i]) == "-w" ) physlist  = argv[i+1];
+    else if ( G4String(argv[i]) == "-w" ) physlist  = atoi(argv[i+1]);
     else if ( G4String(argv[i]) == "-r" ) runtype   = atoi(argv[i+1]);
     else if ( G4String(argv[i]) == "-study" ) study   = atoi(argv[i+1]);
     else if ( G4String(argv[i]) == "-fid" ) fid   = atoi(argv[i+1]);
@@ -138,7 +138,7 @@ int main(int argc,char** argv)
   run->setTest3(-400);
   
   if(momentum.size()) run->setMomentum(atof(momentum));  
-  if(physlist.size()) run->setPhysList(atoi(physlist));
+  run->setPhysList(physlist);
   if(geometry.size()) run->setGeometry(atoi(geometry));
   if(radiator.size()) run->setRadiator(atoi(radiator));
   if(lensId.size())   run->setLens(atoi(lensId));
@@ -193,24 +193,31 @@ int main(int argc,char** argv)
     UImanager->ApplyCommand("/Prt/geom/prtRotation 90 deg");
     UImanager->ApplyCommand("/gun/direction 0 0 1");
   }
-   
-  if ( particle.size() ) {
-    int pdgid = 0;
-    if(particle=="mix_pip") PrtManager::Instance()->getRun()->setPid(10001);
-    else if(particle=="mix_pik") PrtManager::Instance()->getRun()->setPid(10002);
-    else{
-      G4String command = "/gun/particle ";
-      UImanager->ApplyCommand(command+particle);
-      if(particle=="proton") pdgid = 2212;
-      if(particle=="pi+") pdgid = 211;
-      if(particle=="pi0") pdgid = 111;
-      if(particle=="kaon+") pdgid = 321;
-      if(particle=="kaon-") pdgid = -321;
-      if(particle=="mu-") pdgid = 13;
-      if(particle=="e-") pdgid = 11;
-      if(particle=="opticalphoton") pdgid = 0;
+
+  if (particle.size()) {
+    if (particle == "mix_pip") PrtManager::Instance()->getRun()->setPid(10001);
+    else if (particle == "mix_pik") PrtManager::Instance()->getRun()->setPid(10002);
+    else {
+      if (particle == "cry") pdgid = 1000;
+      if (particle == "proton") pdgid = 2212;
+      if (particle == "pi+") pdgid = 211;
+      if (particle == "pi0") pdgid = 111;
+      if (particle == "kaon+") pdgid = 321;
+      if (particle == "kaon-") pdgid = -321;
+      if (particle == "mu-") pdgid = 13;
+      if (particle == "e-") pdgid = 11;
+      if (particle == "opticalphoton") pdgid = 0;
       PrtManager::Instance()->getRun()->setPid(pdgid);
-    }   
+    }
+  }
+
+  if (physlist == 1) {
+    UImanager->ApplyCommand("/process/inactivate Decay all");
+    UImanager->ApplyCommand("/process/inactivate compt all");
+    UImanager->ApplyCommand("/process/inactivate hIoni all");
+    UImanager->ApplyCommand("/process/inactivate eIoni all");
+    UImanager->ApplyCommand("/process/inactivate muIoni all");
+    UImanager->ApplyCommand("/process/inactivate conv all");
   }
 
   // if(momentum.size()) UImanager->ApplyCommand( "/gun/momentumAmp "+momentum);

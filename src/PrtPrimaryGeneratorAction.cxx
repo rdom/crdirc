@@ -127,67 +127,96 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   PrtManager::Instance()->addEvent(PrtEvent());
 
-  if (fRun->getRunType() == 0) { // cry particle source
+  int pdg = fRun->getPid();
+  std::cout << "pdg " << pdg << std::endl;
 
-    if (InputState != 0) {
-      G4String *str = new G4String("CRY library was not successfully initialized");
-      // G4Exception(*str);
-      G4Exception("PrimaryGeneratorAction", "1", RunMustBeAborted, *str);
-    }
-    G4String particleName;
-    vect->clear();
-    gen->genEvent(vect);
+  if (fRun->getRunType() == 0) {
 
-    // //....debug output
-    // std::cout << "\nEvent=" << anEvent->GetEventID() << " "
-    //           << "CRY generated nparticles=" << vect->size() << std::endl;
+    if (pdg == 1000) { // cry particle source
 
-    for (unsigned j = 0; j < vect->size(); j++) {
-      particleName = CRYUtils::partName((*vect)[j]->id());
+      if (InputState != 0) {
+        G4String *str = new G4String("CRY library was not successfully initialized");
+        // G4Exception(*str);
+        G4Exception("PrimaryGeneratorAction", "1", RunMustBeAborted, *str);
+      }
+      G4String particleName;
+      vect->clear();
+      gen->genEvent(vect);
 
       // //....debug output
-      // std::cout << "  " << particleName << " "
-      //           << "charge=" << (*vect)[j]->charge() << " " << std::setprecision(4)
-      //           << "energy (MeV)=" << (*vect)[j]->ke() * MeV << " "
-      //           << "pos (m)" << G4ThreeVector((*vect)[j]->x(), (*vect)[j]->y(), (*vect)[j]->z())
-      //           << " "
-      //           << "direction cosines "
-      //           << G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w()) << " "
-      // 	        << " time " << (*vect)[j]->t()
-      //           << std::endl;
-      
-      fParticleGun->SetParticleDefinition(particleTable->FindParticle((*vect)[j]->PDGid()));
-      fParticleGun->SetParticleEnergy((*vect)[j]->ke() * MeV);
-      fParticleGun->SetParticlePosition(
-        G4ThreeVector((*vect)[j]->x() * m, (*vect)[j]->y() * m, (*vect)[j]->z() * m));
-      fParticleGun->SetParticleMomentumDirection(
-        G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w()));
-      fParticleGun->SetParticleTime((*vect)[j]->t());
+      // std::cout << "\nEvent=" << anEvent->GetEventID() << " "
+      //           << "CRY generated nparticles=" << vect->size() << std::endl;
+
+      for (unsigned j = 0; j < vect->size(); j++) {
+        particleName = CRYUtils::partName((*vect)[j]->id());
+
+        if ((*vect)[j]->ke() * MeV < 2000) continue;
+
+        // //....debug output
+        // std::cout << "  " << particleName << " "
+        //           << "charge=" << (*vect)[j]->charge() << " " << std::setprecision(4)
+        //           << "energy (MeV)=" << (*vect)[j]->ke() * MeV << " "
+        //           << "pos (m)" << G4ThreeVector((*vect)[j]->x(), (*vect)[j]->y(),
+        //           (*vect)[j]->z())
+        //           << " "
+        //           << "direction cosines "
+        //           << G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w()) << " "
+        // 	        << " time " << (*vect)[j]->t()
+        //           << std::endl;
+
+        fParticleGun->SetParticleDefinition(particleTable->FindParticle((*vect)[j]->PDGid()));
+        fParticleGun->SetParticleEnergy((*vect)[j]->ke() * MeV);
+        fParticleGun->SetParticlePosition(
+          G4ThreeVector((*vect)[j]->x() * m, (*vect)[j]->y() * m, (*vect)[j]->z() * m));
+        fParticleGun->SetParticleMomentumDirection(
+          G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w()));
+        fParticleGun->SetParticleTime((*vect)[j]->t());
+        fParticleGun->GeneratePrimaryVertex(anEvent);
+
+        delete (*vect)[j];
+      }
+
+    } else {
+      if (pdg == 2212) fPid = 4;
+      else if (pdg == 321) fPid = 3;
+      else if (pdg == 211) fPid = 2;
+      else if (pdg == 10001 && fPid > 2) fPid = 2;
+      else if (pdg == 10001 && fPid == 2) fPid = 4;
+      else if (pdg == 10002 && fPid > 2) fPid = 2;
+      else if (pdg == 10002 && fPid == 2) fPid = 3;
+
+      PrtManager::Instance()->getEvent()->setPid(fPid);
+      fParticleGun->SetParticleDefinition(fParticle[fPid]);
+      fParticleGun->SetParticlePosition(G4ThreeVector(0, 0, 0));
+      G4ThreeVector dir(0, 0, 1);
+      dir.setTheta(acos(-1 + 0.001 * G4UniformRand()));
+      dir.setPhi(2 * M_PI * G4UniformRand());
+      // dir.setTheta(178 * deg);
+      // dir.setPhi(5 * deg);
+      fParticleGun->SetParticleMomentumDirection(dir);
       fParticleGun->GeneratePrimaryVertex(anEvent);
 
-      delete (*vect)[j];
+      // if(anEvent->GetEventID() == 0){ // add custom tracks
+      //   fParticleGun->SetParticleDefinition(fParticle[1]);
+      //   fParticleGun->SetParticleEnergy(4 * GeV);
+      //   fParticleGun->SetParticlePosition(G4ThreeVector(0, 0, 0));
+      //   G4ThreeVector v(0, 0, 1);
+      //   v.setTheta(178 * deg);
+      //   v.setPhi(2 *deg);
+      //   fParticleGun->SetParticleMomentumDirection(v);
+      //   fParticleGun->GeneratePrimaryVertex(anEvent);
+
+      //   fParticleGun->SetParticleDefinition(fParticle[1]);
+      //   fParticleGun->SetParticleEnergy(4 * GeV);
+      //   fParticleGun->SetParticlePosition(G4ThreeVector(0, 0, 0));
+      //   G4ThreeVector v2(0, 0, 1);
+      //   v2.setTheta(178 * deg);
+      //   v2.setPhi(-185 *deg);
+      //   fParticleGun->SetParticleMomentumDirection(v2);
+      //   fParticleGun->GeneratePrimaryVertex(anEvent);
+      // }
     }
   }
-
-  // if(anEvent->GetEventID() == 0){ // add custom tracks
-  //   fParticleGun->SetParticleDefinition(fParticle[1]);
-  //   fParticleGun->SetParticleEnergy(4 * GeV);
-  //   fParticleGun->SetParticlePosition(G4ThreeVector(0, 0, 0));
-  //   G4ThreeVector v(0, 0, 1);
-  //   v.setTheta(178 * deg);
-  //   v.setPhi(2 *deg);
-  //   fParticleGun->SetParticleMomentumDirection(v);
-  //   fParticleGun->GeneratePrimaryVertex(anEvent);
-
-  //   fParticleGun->SetParticleDefinition(fParticle[1]);
-  //   fParticleGun->SetParticleEnergy(4 * GeV);
-  //   fParticleGun->SetParticlePosition(G4ThreeVector(0, 0, 0));
-  //   G4ThreeVector v2(0, 0, 1);
-  //   v2.setTheta(178 * deg);
-  //   v2.setPhi(-185 *deg);
-  //   fParticleGun->SetParticleMomentumDirection(v2);
-  //   fParticleGun->GeneratePrimaryVertex(anEvent);
-  // }
 
   if (fRun->getRunType() == 1) { // LUT generation
 
@@ -209,25 +238,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
     PrtManager::Instance()->getEvent()->setMomentum(TVector3(dir.x(), dir.y(), dir.z()));
   }
-
-  if (fRun->getRunType() == 7) {
-    int pdg = fRun->getPid();
-    if (pdg > 0) {
-      if (pdg == 2212) fPid = 4;
-      else if (pdg == 321) fPid = 3;
-      else if (pdg == 211) fPid = 2;
-      else if (pdg == 10001 && fPid > 2) fPid = 2;
-      else if (pdg == 10001 && fPid == 2) fPid = 4;
-      else if (pdg == 10002 && fPid > 2) fPid = 2;
-      else if (pdg == 10002 && fPid == 2) fPid = 3;
-
-      PrtManager::Instance()->getEvent()->setPid(fPid);
-      fParticleGun->SetParticleDefinition(fParticle[fPid]);
-    } else {
-      fParticleGun->SetParticleDefinition(fParticleOP);
-    }
-  }
-  
 }
 
 void PrtPrimaryGeneratorAction::SetOptPhotonPolar() {

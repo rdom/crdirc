@@ -84,7 +84,8 @@ with event display:
 -f     number of the first event for the reconstruction
 
 -x    particle type
-              "pi+" 
+              "cry" (cosmic ray library, default)
+              "pi+"
               "proton"
               "kaon+"
                  ...
@@ -96,7 +97,7 @@ with event display:
 
 -w    physical list
                 0    standard  (default)
-                1    without multiple scattering
+                1    without multiple scattering and bremsstrahlung
                 10   monochromatic Cherenkov light
                 11   10 + 1
 
