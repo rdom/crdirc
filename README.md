@@ -14,6 +14,10 @@ with event display:
 ```
 ![alt text](https://github.com/rdom/crdirc/raw/master/pics/event_display.png)
 
+```
+example with muons:
+./crdirc -study 500 -x mu- -p 10 -i hits.root -e 20 -w 1
+```
 
 ## Options
 ```
