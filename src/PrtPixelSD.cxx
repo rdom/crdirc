@@ -101,9 +101,9 @@ void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
       }
     }
   } else {
-    for (int m = 0; m < 8; m++) {
+    for (int m = 0; m < 12; m++) {
       for (int i = 0; i < 64; i++) {
-        fQe_space[m][i] = 0.9;
+        fQe_space[m][i] = 1;
       }
     }
   }
@@ -238,14 +238,18 @@ bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
     return true;
   }
 
-  bool quantum_efficiency(true);
+  bool qe_space_efficiency(true);
   bool charge_sharing(true);
   bool dead_time(true);
   bool dark_counts(true);
   bool transport_efficiency(true);
 
-  if(fMcpLayout == 2030) charge_sharing = false;
-
+  if (fMcpLayout == 2030) {
+    charge_sharing = false;
+    qe_space_efficiency = false;
+    dead_time = false;
+  }
+  
   if (transport_efficiency) {
     double pi(4 * atan(1));
     double roughness(0.5); // nm
@@ -276,7 +280,7 @@ bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   }
 
   bool is_hit(true);
-  if (fRunType == 0 && fMcpLayout >= 2015 && quantum_efficiency) {
+  if (fRunType == 0 && qe_space_efficiency) {
     if (fQe_space[mcpid][pixid] > G4UniformRand()) {
       if (fMultHit[mcpid][pixid] == 0 || !dead_time)
         PrtManager::Instance()->addHit(hit, localPos, digiPos, position);
