@@ -95,6 +95,7 @@ void PrtPrimaryGeneratorAction::UpdateCRY(std::string *MessInput) {
 }
 
 void PrtPrimaryGeneratorAction::CRYFromFile(G4String newValue) {
+  
   // Read the cry input file
   std::ifstream inputFile;
   inputFile.open(newValue, std::ios::in);
@@ -124,14 +125,15 @@ void PrtPrimaryGeneratorAction::CRYFromFile(G4String newValue) {
 }
 
 void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
-
-  PrtManager::Instance()->addEvent(PrtEvent());
-
+  
+  // PrtManager::Instance()->addEvent(PrtEvent());
+  PrtManager::Instance()->resetEvent();
+ 
   int pdg = fRun->getPid();
   if (fRun->getRunType() == 0) {
-
+    
     if (pdg == 1000) { // cry particle source
-
+ 
       if (InputState != 0) {
         G4String *str = new G4String("CRY library was not successfully initialized");
         // G4Exception(*str);
@@ -141,14 +143,17 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       vect->clear();
       gen->genEvent(vect);
 
-      // //....debug output
+      //....debug output
       // std::cout << "\nEvent=" << anEvent->GetEventID() << " "
       //           << "CRY generated nparticles=" << vect->size() << std::endl;
 
       for (unsigned j = 0; j < vect->size(); j++) {
         particleName = CRYUtils::partName((*vect)[j]->id());
 
-        if ((*vect)[j]->ke() * MeV < 2000) continue;
+        if ((*vect)[j]->ke() * MeV < 2000) {
+	  delete (*vect)[j];
+	  continue;
+	}
 
         // //....debug output
         // std::cout << "  " << particleName << " "

@@ -36,13 +36,14 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fRunType = fRun->getRunType();
   fGeomId = fRun->getGeometry();
   fMcpLayout = fRun->getPmtLayout();
+  
   fLensId = fRun->getLens();
   fRadiatorId = fRun->getRadiator();
   fPrismStepX = fRun->getPrismStepX();
   fTest1 = fRun->getTest1();
   fTest2 = fRun->getTest2();
   fTest3 = fRun->getTest3();
-
+ 
   fNRow = 3;
   fNCol = 5;
 
@@ -103,11 +104,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fNCol = 2;
   }
 
-  if (fMcpLayout == 20171) {
-    fNRow = 2;
-    fNCol = 4;
-  }
-
   if (fMcpLayout == 2021) { // Barrel DIRC layout
     fNCol = 4;
     fPrizm[2] = 40 + fPrizm[1] * tan(33 * deg);
@@ -148,7 +144,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   double radiatorStepX = -(fBar[1] - fPrizm[0]) / 2. - fPrismStepX;
 
   fCenterShift = G4ThreeVector(0., 0., 0.);
-
+ 
   fOffset = 0;
   if (fGeomId == 2018 || fGeomId == 2) {
     fOffset = 146;
@@ -250,7 +246,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
   if (fGeomId == 0 || fRunType == 1) zshift = 0;
   // tilt scan
-  fPrtRot->rotateY((-90 - fRun->getTheta()) * deg);
+  fPrtRot->rotateY((-180 - fRun->getTheta()) * deg);
   fPrtRot->rotateX((180 + fRun->getPhi()) * deg);
 
   wDirc = new G4PVPlacement(fPrtRot, dircpos + G4ThreeVector(-zshift, 0, dircz), lDirc, "wDirc",
@@ -702,31 +698,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
                         2.5;      // +2.5 adjustment to the prt2014
         if (j != 1) shiftx -= 14; //(3/2.)*fMcpActive[0]/8.;
         double shifty = (fMcpTotal[0] + 3) * (j - 1);
-
-        if (fMcpLayout == 2016) { // 9MCP
-          double msh = 13;        //(fPrizm[2]-5*fMcpTotal[0])/4.;
-          shiftx = 3 + i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2.;
-          // if(j==1) shiftx -= 3*fMcpActive[0]/8.;
-          if (j == 1)
-            shiftx += (1 / 2.) * fMcpActive[0] /
-                      8.; // i*(fMcpTotal[0]+3)-fPrizm[3]/2+fMcpActive[0]/2.+2*fMcpActive[0]/8.;
-          shifty = (fMcpTotal[0] + 3) * (j - 1);
-        }
-
-        if (fMcpLayout == 201612) { // 12MCP
-          double msh = 3;           //(fPrizm[2]-5*fMcpTotal[0])/4.;
-          shiftx = 0 + i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2.;
-          // if(j==1) shiftx -= 3*fMcpActive[0]/8.;
-          if (j == 1) shiftx += (1 / 2.) * fMcpActive[0] / 8.;
-          shifty = (fMcpTotal[0] + 3) * (j - 1);
-        }
-
-        if (fMcpLayout == 20171) {
-          double msh = 11.2; //(fPrizm[2]-5*fMcpTotal[0])/4.;
-          shiftx = i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2. + 3;
-          if (j == 1) shiftx += (3 / 2.) * fMcpActive[0] / 8.;
-          shifty = (fMcpTotal[0] + 3) * (j - 1);
-        }
 
         if (fMcpLayout == 2030 || fMcpLayout == 12) {
           double msh = 3;

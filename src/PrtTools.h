@@ -43,6 +43,9 @@
 #include <TKey.h>
 #include "TPRegexp.h"
 #include "TFitResult.h"
+#include "TGraphAsymmErrors.h"
+#include "TEventList.h"
+#include "TCut.h"
 
 #include <iostream>
 #include <fstream>
@@ -79,7 +82,7 @@ class PrtTools {
   void modify_run(PrtRun *run);
   PrtRun *find_run(int sid, int fid = 0);
   PrtRun *find_run(TString path);
-  void fill_digi(int pmt, int pix);
+  void fill_digi(int pmt, int pix, double w = 1);
   
   void set_palette(int p = 1);
   void set_pmtlayout(int v) { _pmtlayout = v; }
@@ -87,7 +90,8 @@ class PrtTools {
   TString get_inpath();
   TString get_outpath();
   TString get_lutpath();
-  TString get_pdfpath();  
+  TString get_pdfpath();
+  TString get_dbpath() { return _dbpath; }
   int get_channel(int tdc, int tdcch);
   int get_tdcid(int ch);
   TString rand_str(int len = 10);
@@ -95,6 +99,8 @@ class PrtTools {
                int peakSearch = 1, int bkg = 0, TString opt = "MQ");
   TGraph *fit_slices(TH2F *h, double minrange = 0, double maxrange = 0, double fitrange = 1,
                      int rebin = 1, int ret = 0);
+  TGraph *fit_slices_x(TH2F *h, double minrange = 0, double maxrange = 0, double fitrange = 1,
+		       int rebin = 1, int ret = 0);  
   void style_graph(TGraph *g, int id);
   double integral(TH1F *h, double xmin, double xmax);
   void normalize(TH1F *h1, TH1F *h2);
@@ -102,7 +108,8 @@ class PrtTools {
   void normalize_to(TH1F *hists[], int size, double max = 1);
   TGraph *smooth(TGraph *g, int smoothness = 1);
   int shift_hist(TH1 *hist, double double_shift);
-
+  double calculate_efficiency(TH1F *h1, TH1F *h2);
+  
   TString dir(TString path);
   TString create_dir(TString inpath = "");
   void write_info(TString filename);
@@ -112,6 +119,8 @@ class PrtTools {
   void set_style(TCanvas *c);
   void save(TPad *c= NULL,TString path="", int what=0, int style=0);
 
+  double theta_to_eta(double t) { return -TMath::Log((tan(0.5 * TMath::DegToRad() * t))); }
+  double eta_to_theta(double eta) { return  2.0*atan(exp(-eta))*TMath::RadToDeg(); }
 
   void add_canvas(TString name="c",int w=800, int h=400);
   void add_canvas(TCanvas *c);
@@ -133,6 +142,7 @@ class PrtTools {
   // accessors
   PrtEvent *event() const { return _event; }
   PrtRun *run() { return _run; }
+  TChain *chain() { return _chain; }
   int pdg(int v) { return _pdg[v]; }
   int pid() { return _pid; }
   int i( ) { return _iter; }
@@ -147,8 +157,8 @@ class PrtTools {
   // mutators
   void set_path(TString v) { _savepath = v; }
 
-  array<int, 10000> map_pmt{}, map_pix{}, map_row{}, map_col{}, map_tdc{};
-  array<array<int, 1000>, 100> map_pmtpix{};
+  array<int, 100000> map_pmt{}, map_pix{}, map_row{}, map_col{}, map_tdc{};
+  array<array<int, 10000>, 24> map_pmtpix{};
 
  private:
   TChain *_chain;
@@ -159,7 +169,7 @@ class PrtTools {
   array<double, 5> _mass = {0.000511, 0.1056584, 0.139570, 0.49368, 0.9382723};
   array<TString, 5> _name = {"e", "muon", "pion", "kaon", "proton"};
   array<TString, 5> _lname = {"e", "#mu", "#pi", "K", "p"};
-  array<int, 5> _color = {kOrange + 6, kCyan + 1, kBlue + 1, kRed + 1, kRed + 1};
+  array<int, 5> _color = {kOrange + 6, kCyan + 1, kBlue + 1, kRed + 1, kBlack};
 
   array<TString, 32> _tdcsid_jul2018 = {
     "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "200a",
@@ -172,7 +182,7 @@ class PrtTools {
 
   std::vector<PrtRun *> _runs;
   PrtRun* _run;
-  array<TH2F *, 21> _hdigi{};
+  array<TH2F *, 28> _hdigi{};
   int _entries;
   int _iter = -1;
   int _printstep = 1000;
@@ -190,89 +200,3 @@ class PrtTools {
 
 #endif
 
-
-
-// const int prt_ntdcm = 80; //41
-// int prt_ntdc = prt_ntdcm;
-// int prt_maxch = prt_ntdc*48;
-
-
-
-// TString prt_getTdcName(int ch){
-//   return prt_tdcsid[prt_getTdcId(ch)];
-// }
-
-// int prt_getTdcChannel(int ch){
-//   int tch=0,tdcc=0;
-//   if(prt_geometry==2018){
-//     for(int i=0; i<=prt_ntdc; i++){
-//       tdcc=ch-tch+1;
-//       if(i==2 || i==6 || i==10 || i==14 || i==1 || i==2 || i==5 || i==6 || i==9 || i==10 || i==13
-//       || i==14) tch += 16; else tch += 48; if(tch>ch){
-// 	break;
-//       };
-//     }
-//   }else if(prt_geometry==2023){
-//     tdcc=ch%32+1;
-//   }else{
-//     tdcc=ch%48+1;
-//   }
-//   return tdcc;
-// }
-
-// int prt_getColorId(int ind, int style =0){
-//   int cid = 1;
-//   if(style==0) {
-//     cid=ind+1;
-//     if(cid==5) cid =8;
-//     if(cid==3) cid =kOrange+2;
-//   }
-//   if(style==1) cid=ind+300;
-//   return cid;
-// }
-
-
-// void prt_addInfo(TString str){
-//   prt_info += str+"\n";
-// }
-
-
-
-// TString prt_createSubDir(TString dir="dir"){
-//   gSystem->mkdir(dir);
-//   return dir;
-// }
-
-
-// double prt_get_momentum_from_tof(double dist,double dtof){
-//   double s = dtof*0.299792458/dist;
-//   double x = s*s;
-//   double a = prt_mass[2]*prt_mass[2]; //pi
-//   double b = prt_mass[4]*prt_mass[4]; //p
-//   double p = sqrt((a - 2*sqrt(a*a+a*b*x-2*a*b+b*b)/s + b)/(x - 4));
-
-//   return p;
-// }
-
-// // return TOF difference [ns] for mominum p [GeV] and flight path l [m]
-// double prt_get_tof_diff(int pid1=211, int pid2=321, double p=1, double l=2){
-//   double c = 299792458;
-//   double m1 = prt_mass[prt_get_pid(pid1)];
-//   double m2 = prt_mass[prt_get_pid(pid2)];
-//   double td = l*(sqrt(p*p+m1*m1)-sqrt(p*p+m2*m2))/(p*c)*1E9;
-
-//   // relativistic
-//   // td = l*(m1*m1-m2*m2)/(2*p*p*c)*1E9;
-
-//   return td;
-// }
-
-// bool prt_ispath(TString path){
-//   Long_t *id(0),*size(0),*flags(0),*modtime(0);
-//   return !gSystem->GetPathInfo(path,id,size,flags,modtime);
-// }
-
-// int prt_get3digit(TString str){
-//   TPRegexp e("[0-9][0-9][0-9]");
-//   return ((TString)str(e)).Atoi();
-// }

@@ -1,6 +1,6 @@
 #----------------------------------------------------------------------------
 # Setup the project
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.9 FATAL_ERROR)
 project(prtdirc)
 
 #----------------------------------------------------------------------------
@@ -34,9 +34,10 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 set(CMAKE_CXX_STANDARD 17)
 #----------------------------------------------------------------------------
 # Generate dictionary for root
-ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtRun.h PrtLutNode.h LINKDEF src/PrtLinkDef.h MODULE Prt)
-add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtRun.cxx  src/PrtLutNode.cxx ../prttools/PrtTools.cxx G__Prt.cxx)
-#target_link_libraries(Prt ${ROOT_LIBRARIES})
+ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtRun.h PrtLutNode.h PrtTools.h LINKDEF src/PrtLinkDef.h MODULE Prt)
+add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtRun.cxx src/PrtLutNode.cxx src/PrtTools.cxx G__Prt.cxx)
+
+target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
 
 #----------------------------------------------------------------------------
 # Cry lib
@@ -49,7 +50,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fno-trapping-math -ftree-vectorize -f
 set(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-maybe-uninitialized -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable")
 
 add_executable(crdirc ${sources})
-target_link_libraries(crdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} Prt Cry -lSpectrum -lHistPainter)
+target_link_libraries(crdirc -lGLU ${Geant4_LIBRARIES} Cry Prt)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we

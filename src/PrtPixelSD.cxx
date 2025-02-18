@@ -83,6 +83,7 @@ void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
     0.973, 0.973, 0.961, 0.936, 0.872, 0.916, 0.931, 0.941, 0.952, 0.955, 0.939, 0.911};
 
   fMcpLayout = PrtManager::Instance()->getRun()->getPmtLayout();
+  
   fRunType = PrtManager::Instance()->getRun()->getRunType();
   int npmt = PrtManager::Instance()->getRun()->getNpmt();
   int npix = PrtManager::Instance()->getRun()->getNpix();
@@ -121,6 +122,7 @@ void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
 }
 
 bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
+
   // // energy deposit
   // double edep = step->GetTotalEnergyDeposit();
 
@@ -352,7 +354,7 @@ void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
 
   good = (good && e->getT3Position().Z() < -1 && e->getHits().size() > 0);
   
-  if (good) std::cout << e->getT1Position().Z() <<" " <<  e->getT2Position().Z() <<" " <<  e->getT3Position().Z() << " hits = " << e->getHits().size() << std::endl;
+  // if (good) std::cout << e->getT1Position().Z() <<" " <<  e->getT2Position().Z() <<" " <<  e->getT3Position().Z() << " hits = " << e->getHits().size() << std::endl;
   
   if (good) PrtManager::Instance()->fill();
 }

@@ -58,6 +58,13 @@ void PrtManager::addEvent(PrtEvent event) {
   }
 }
 
+void PrtManager::resetEvent() {
+  if (fRunType == 0 || fRunType == 5 || fRunType == 6) {
+    delete fEvent;
+    fEvent = new PrtEvent();
+  }
+}
+
 void PrtManager::addHit(PrtHit hit) {
   fEvent->addHit(hit);
 }

@@ -13,10 +13,13 @@
 
 PrtStackingAction::PrtStackingAction() : G4UserStackingAction(), fScintillationCounter(0), fCerenkovCounter(0) {
 
-  fRunType = PrtManager::Instance()->getRun()->getRunType();      
+  fRunType = PrtManager::Instance()->getRun()->getRunType();
+  int layout = PrtManager::Instance()->getRun()->getPmtLayout();
   fQEtype = 0;
-  if (PrtManager::Instance()->getRun()->getPmtLayout() == 12) fQEtype = 2; // panda mcp-pmts
-  if (PrtManager::Instance()->getRun()->getPmtLayout() == 2030) fQEtype = 1;
+  
+  if (layout == 4) fQEtype = 0;
+  if (layout == 12) fQEtype = 2; // panda mcp-pmts
+  if (layout == 2030) fQEtype = 1;
   
   // create a detector efficiency function:
   {
@@ -200,6 +203,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
 void PrtStackingAction::NewStage() {
   int runtype = PrtManager::Instance()->getRun()->getRunType();
   auto e = PrtManager::Instance()->getEvent();
+
   bool good = (e->getT1Position().Z() < -1 && e->getT2Position().Z() < -1);
   
   int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();

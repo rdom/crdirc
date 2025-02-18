@@ -12,7 +12,7 @@
 #include "PrtRun.h"
 #include "PrtEvent.h"
 #include "PrtHit.h"
-#include "../../prttools/PrtTools.h"
+#include "PrtTools.h"
 #include "PrtManager.h"
 #include "PrtLutNode.h"
 

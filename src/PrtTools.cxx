@@ -22,10 +22,10 @@ PrtTools::PrtTools(TString in) {
 
 void PrtTools::init() {
   _maxch = 5000;
-  _npix = 64;
-  _npmt = 8;
+  _npix = 256;
+  _npmt = 24;
   _maxdircch = _npmt * _npix;
-  _pmtlayout = 2018;
+  _pmtlayout = 2031;
   
   _canvaslist = new TList();
    _event = new PrtEvent();
@@ -40,12 +40,12 @@ void PrtTools::init() {
     }
     _info += "\n";
   }
-
-  if (!gSystem->AccessPathName("data_db.dat")) {
-    read_db("data_db.dat");
-  } else {
-    read_db("../../prttools/data_db.dat");
-  }
+  
+  // if (!gSystem->AccessPathName("data_db.dat")) {
+  //   read_db("data_db.dat");
+  // } else {
+  //   read_db("../../prttools/data_db.dat");
+  // }
   _dbpath = "~/data/jul18/";
   gSystem->ExpandPathName(_dbpath);
 }
@@ -53,7 +53,7 @@ void PrtTools::init() {
 bool PrtTools::init_run(TString in, int bdigi, TString savepath, int setupid) {
 
   
-  if (in == "" || gSystem->AccessPathName(in)) {
+  if ((in == "" || gSystem->AccessPathName(in)) && !in.Contains("*")) {
     std::cout << "file not found " << in << std::endl;
     return false;
   }
@@ -66,7 +66,7 @@ bool PrtTools::init_run(TString in, int bdigi, TString savepath, int setupid) {
   _info += _run->getInfo();
 
   if (savepath != "") _savepath = savepath;
-  TGaxis::SetMaxDigits(4);
+  TGaxis::SetMaxDigits(3);
   set_palette(1);
   create_maps(setupid);
 
@@ -82,7 +82,6 @@ bool PrtTools::init_run(TString in, int bdigi, TString savepath, int setupid) {
 
 void PrtTools::init_digi() {
   int nrow = sqrt(_npix);
-
   for (int m = 0; m < _npmt; m++) {
     if (_hdigi[m]) {
       _hdigi[m]->Reset("M");
@@ -90,8 +89,10 @@ void PrtTools::init_digi() {
       _hdigi[m] = new TH2F(Form("pmt%d", m), Form("pmt%d", m), nrow, 0, nrow, nrow, 0, nrow);
       _hdigi[m]->SetStats(0);
       _hdigi[m]->SetTitle(0);
-      _hdigi[m]->GetXaxis()->SetNdivisions(((nrow > 10) ? 20 : 10));
-      _hdigi[m]->GetYaxis()->SetNdivisions(((nrow > 10) ? 20 : 10));
+      // _hdigi[m]->GetXaxis()->SetNdivisions(((nrow > 10) ? 20 : 10));
+      // _hdigi[m]->GetYaxis()->SetNdivisions(((nrow > 10) ? 20 : 10));
+      _hdigi[m]->GetXaxis()->SetNdivisions(nrow);
+      _hdigi[m]->GetYaxis()->SetNdivisions(nrow);
       _hdigi[m]->GetXaxis()->SetLabelOffset(100);
       _hdigi[m]->GetYaxis()->SetLabelOffset(100);
       _hdigi[m]->GetXaxis()->SetTickLength(1);
@@ -121,10 +122,14 @@ TString PrtTools::get_outpath() {
     return _dbpath + Form("%d/%sC.rec.root", _run->getStudy(), _run->getName().Data());
 }
 
-void PrtTools::fill_digi(int pmt, int pix){  
+void PrtTools::fill_digi(int pmt, int pix, double w){
 
-  int n = sqrt(_npix);  
-  if (pmt < _npmt) _hdigi[pmt]->Fill(pix % n, pix / n);
+  int n = sqrt(_npix);
+
+  if (pmt < _npmt) {
+    if (_run->getGeometry() == 2) _hdigi[pmt]->Fill(pix / n, pix % n, w);
+    else _hdigi[pmt]->Fill(pix % n, pix / n, w);
+  }
 }
 
 // _pmtlayout == 5    - 5 row's design for the PANDA Barrel DIRC
@@ -137,7 +142,9 @@ void PrtTools::fill_digi(int pmt, int pix){
 // _pmtlayout == 2030 - EIC DIRC beam test
 // _pmtlayout == 2031 - EIC DIRC prism
 // _pmtlayout == 2032 - EIC DIRC focusing prism
-// _pmtlayout == 3000 - GlueX 
+// _pmtlayout == 3000 - GlueX
+// _pmtlayout == 4 - EIC DIRC prism, LAPD
+// _pmtlayout == 3 - one pmt covering whole PD
 TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   
   _last_maxz = maxz;
@@ -150,7 +157,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
 
   TPad *pads[28];// _nmaxpmt
   TPad *toppad;
-  
+
   if (_pmtlayout == 2015 || _pmtlayout == 5) toppad = new TPad(sid, "T", 0.04, 0.04, 0.88, 0.96);
   else if (_pmtlayout == 2021)
     toppad = new TPad(sid, "T", 0.12, 0.02, 0.78, 0.98);
@@ -170,6 +177,8 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     toppad = new TPad(sid, "T", 0.12, 0.01, 0.80, 0.99);
   else if (_pmtlayout == 3000)
     toppad = new TPad(sid, "T", 0.005, 0.07, 0.95, 0.93);
+  else if (_pmtlayout == 4)
+    toppad = new TPad(sid, "T", 0.12, 0.02, 0.85, 0.98);
   else
     toppad = new TPad(sid, "T", 0.04, 0.04, 0.96, 0.96);
 
@@ -200,6 +209,18 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   if (_pmtlayout == 3000) {
     nrow = 6;
     ncol = 18;
+  }
+  if (_pmtlayout == 4) {
+    nrow = 2;
+    ncol = 3;
+  }
+  if (_pmtlayout == 3) {
+    nrow = 1;
+    ncol = 1;
+  }
+  if (_run->getGeometry() == 2) {
+    nrow = 3;
+    ncol = 4;
   }
 
   if (_pmtlayout > 1) {
@@ -271,7 +292,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           tbh = 0.001;
           padi = j * ncol + i;
         }
-        if (_pmtlayout == 2030) {
+        if (_pmtlayout == 2030 || _run->getGeometry() == 2) {
           margin = 0.1;
           shift = 0;
           shiftw = 0.01;
@@ -287,16 +308,28 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           tbh = 0.005;
           padi = i * nrow + j;
         }
+	if (_pmtlayout == 4) {
+          margin = 0.1;
+          shift = 0;
+          shiftw = 0.01;
+          tbw = 0.001;
+          tbh = 0.005;
+          padi = j * ncol + i;
+        }
+	if (_pmtlayout == 3) {
+          margin = 0.05;
+          shift = 0;
+          shiftw = 0.01;
+          tbw = 0.001;
+          tbh = 0.001;
+          padi = j * ncol + i;
+        }
 
         pads[padi] = new TPad(
           sid + Form("P%d", padi), "T", i / (ncol + 2 * margin) + tbw + shift + shiftw,
           j / (double)nrow + tbh + shifth, (i + 1) / (ncol + 2 * margin) - tbw + shift + shiftw,
           (1 + j) / (double)nrow - tbh + shifth, 21);
 	
-        // glx_hpads[padi] = new TPad(
-        //   Form("P%d", padi), "T", i / (Double_t)ncol + bw, 1 - ((j + 1) / (Double_t)nrow - bh),
-        //   (i + 1) / (Double_t)ncol - bw, 1 - (j / (Double_t)nrow + bh), 21);
-
         auto b =
           new TBox(i / (ncol + 2 * margin) + tbw + shift + shiftw, j / (double)nrow + tbh + shifth,
                    (i + 1) / (ncol + 2 * margin) - tbw + shift + shiftw,
@@ -385,7 +418,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   _last_max = max;
   int nnmax(0);
   for (int p = 0; p < nrow * ncol; p++) {
-    if (_pmtlayout == 1 || _pmtlayout == 4)
+    if (_pmtlayout == 1)
       np = p % nrow * ncol + p / 3;
     else
       np = p;
@@ -404,7 +437,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   TPaletteAxis *palette;
   if (_pmtlayout == 2018 || _pmtlayout == 2023)
     palette = new TPaletteAxis(0.89, 0.1, 0.93, 0.90, (TH1 *)_hdigi[nnmax]);
-  else if (_pmtlayout == 2032)
+  else if (_pmtlayout == 2032 || _pmtlayout == 4 || _pmtlayout == 3)
     palette = new TPaletteAxis(0.91, 0.1, 0.94, 0.90, (TH1 *)_hdigi[nnmax]);
   else
     palette = new TPaletteAxis(0.82, 0.1, 0.86, 0.90, (TH1 *)_hdigi[nnmax]);
@@ -419,7 +452,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
 }
 
 TString PrtTools::pix_digi(TString s) {
-  int nrow = 3, ncol = 5, np, nmax = 0, npix = 8;
+  int nrow = 3, ncol = 5, np, npix = 8;
   if (_pmtlayout == 2016) ncol = 3;
   if (_pmtlayout == 2017) ncol = 4;
   if (_pmtlayout == 2018 || _pmtlayout == 2023) {
@@ -506,11 +539,11 @@ bool PrtTools::read_db(TString in) {
   std::cout << "=== Parsing DB: " << in << std::endl;
 
   std::ifstream ins(in);
-  double dx = 0, vx = 0, dy = 0, vy = 0;
+  // double dx = 0, vx = 0, dy = 0, vy = 0;
   TString info, name;
   std::string line, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15;
   int study = 0, fileid = 0, radiatorid = 0, lensid = 0, geometry = 0, pmtlayout = 0;
-  double theta = 0, phi = 0, z = 0, x = 0, sx = 0, sy = 0, mom = 0, beamsize = 0, simo = 0;
+  double theta = 0, phi = 0, z = 0, x = 0, sx = 0, sy = 0, mom = 0, beamsize = 0;
 
   while (std::getline(ins, line)) {
     std::istringstream iss(line);
@@ -744,10 +777,11 @@ void PrtTools::create_maps(int pmtlayout) {
       map_tdc[dec] = i;
     }
   }
-  
-  for (int ch = 0; ch < _maxch; ch++) {
+
+  for (int ch = 0; ch < _maxdircch; ch++) {
     int pmt = ch / _npix;
     int pix = ch % _npix;
+
     map_pmtpix[pmt][pix] = ch;
     
     int col = pix / 2 - 8 * (pix / 16);
@@ -838,8 +872,8 @@ TVector3 PrtTools::fit(TH1 *h, double range, double threshold, double limit, int
     if (peakSearch == 1) {
       _fgaus->SetParameter(1, xmax);
       _fgaus->SetParameter(2, 0.005);
-      _fgaus->SetParLimits(2, 0.003, limit);
-      h->Fit("_fgaus", opt, "", xxmin - range, xxmax + range);
+      _fgaus->SetParLimits(2, 0.0015, limit);
+      h->Fit("_fgaus", opt, "same", xxmin - range, xxmax + range);
     }
 
     if (peakSearch > 1) {
@@ -884,7 +918,7 @@ TVector3 PrtTools::fit(TH1 *h, double range, double threshold, double limit, int
       _fgaus->SetParameter(5, 0.2);
     }
 
-    h->Fit("_fgaus", opt, "", xxmin - range, xxmax + range);
+    h->Fit("_fgaus", opt, "same", xxmin - range, xxmax + range);
     mean1 = _fgaus->GetParameter(1);
     sigma1 = _fgaus->GetParameter(2);
     if (sigma1 > 10) sigma1 = 10;
@@ -942,9 +976,35 @@ TGraph *PrtTools::fit_slices(TH2F *h, double minrange, double maxrange, double f
   return gres;
 }
 
-void style_graph(TGraph *g, int id) {
-  int coll[] = {kBlack, kRed + 1, kGreen, kBlue, 4, kCyan - 6, kOrange, 7, 8, 9, 10};
-  int colm[] = {kBlack, kRed + 1, kGreen + 2, kBlue + 1, 4, kCyan - 6, kOrange + 1, 7, 8, 9, 10};
+TGraph *PrtTools::fit_slices_x(TH2F *h, double minrange, double maxrange, double fitrange, int rebin,
+                             int ret) {
+  auto ht = (TH2F *)h->Clone("ht");
+  ht->RebinX(rebin);
+  int point(0);
+  TGraph *gres = new TGraph();
+  for (int i = 1; i < ht->GetNbinsX(); i++) {
+    double x = ht->GetXaxis()->GetBinCenter(i);
+    if (x < minrange || x > maxrange) continue;
+    auto hp = ht->ProjectionY(Form("bin%d", i), i, i);
+
+    TVector3 res = fit((TH1F *)hp, fitrange, 100, 0.007);
+    double y = 0;    
+    if (ret == 0) y = res.X();
+    if (ret == 1) y = res.Y();
+    if (ret == 2) y = res.X() + 0.5 * res.Y();
+    if (ret == 3) y = res.X() - 0.5 * res.Y();
+
+    gres->SetPoint(point, x, y);
+    gres->SetLineWidth(2);
+    gres->SetLineColor(kRed);
+    point++;
+  }
+  return gres;
+}
+
+void PrtTools::style_graph(TGraph *g, int id) {
+  int coll[] = {kCyan + 1, kOrange + 6, kBlue, kRed, kBlack, kOrange, 7, 8, 9, 10};
+  int colm[] = {kCyan + 2, kOrange + 8, kBlue + 1, kRed + 1, kBlack, kOrange, 7, 8, 9, 10};
 
   int cl = (id < 10) ? coll[id] : id;
   int cm = (id < 10) ? colm[id] : id;
@@ -1045,6 +1105,18 @@ int PrtTools::shift_hist(TH1 *hist, double double_shift) {
     return 0;
   }
   return 1;
+}
+
+double PrtTools::calculate_efficiency(TH1F *h1, TH1F *h2){
+  double eff = 0;
+  double left = h1->GetXaxis()->GetBinCenter(1);
+  double right = h1->GetXaxis()->GetBinCenter(h1->GetNbinsX());
+
+  double tozero = integral(h1, left, 0);
+  double total = integral(h1, left, right);
+  if (total > 0) eff = tozero / total;
+
+  return eff;
 }
 
 void PrtTools::save_canvas(int what, int style, bool rm){
@@ -1219,7 +1291,8 @@ void PrtTools::save(TPad *c,TString path, int what, int style){
       TCanvas *cc;
       if(TString(c->GetName()).Contains("hp") || TString(c->GetName()).Contains("cdigi")) {
 	cc = draw_digi(_last_maxz,_last_minz);
-	cc->SetCanvasSize(800,400);
+	// cc->SetCanvasSize(800,400);
+	cc->SetCanvasSize(w,h);
 	if(name.Contains("=")) name =  name.Tokenize('=')->First()->GetName();
       }else{
       	cc = new TCanvas(TString(c->GetName())+"exp","cExport",0,0,w,h);
@@ -1227,7 +1300,7 @@ void PrtTools::save(TPad *c,TString path, int what, int style){
 	cc->SetCanvasSize(w,h);
       }
 
-      if(style == 0) set_style(cc);
+      // if(style == 0) set_style(cc);
 
       print_canvas(cc,name,path,what);
     }else{

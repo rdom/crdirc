@@ -27,4 +27,4 @@ done
 
 sleep 2
 
-hadd -f hits_90.root b_h*.root
+hadd -f hits_90n.root b_h*.root

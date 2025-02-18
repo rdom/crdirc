@@ -40,10 +40,9 @@ example with muons:
 -fid  fild id
 
 -g    geometry configuration
-                1    in vacuum
-                2    in air
-                3    in air + 1cm plastic at front + trigger
-                5    for calibration
+                1       in vacuum
+		2018    1 bar (default)
+                2       2 bars
 
 -gsx    radiator-prism x step in mm
 
@@ -79,7 +78,7 @@ example with muons:
                 6    3-layer cylindrical lens		
                 10   ideal lens (thickness = 0, ideal focusing)
 
--a    polar angle between particle beam and bar radiator
+-theta    polar angle between particle beam and bar radiator
 
 -phi  azimuth angle between particle beam and bar radiator
 

@@ -36,6 +36,7 @@ class PrtManager {
   void fill();
   void fillLut();
   void addEvent(PrtEvent event);
+  void resetEvent();
   void addHit(PrtHit hit, TVector3 localpos, TVector3 digipos, TVector3 vertex = TVector3(0, 0, 0));
   void addHit(PrtHit hit);
   PrtEvent *getEvent() { return fEvent; }
