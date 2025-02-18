@@ -94,7 +94,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fPrizm[3] = 30;
   }
 
-  if (fMcpLayout == 2030 || fMcpLayout == 24) {
+  if (fMcpLayout == 2030 || fMcpLayout == 12) {
     fNCol = 4;
   }
 
@@ -728,7 +728,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
           shifty = (fMcpTotal[0] + 3) * (j - 1);
         }
 
-        if (fMcpLayout == 2030 || fMcpLayout == 24) {
+        if (fMcpLayout == 2030 || fMcpLayout == 12) {
           double msh = 3;
           shiftx = i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2. + 3;
           shifty = (fMcpTotal[0] + 3) * (j - 1);

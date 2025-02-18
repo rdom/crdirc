@@ -75,6 +75,13 @@ void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
      0.71, 0.74, 0.81, 0.81, 0.80, 0.77, 0.73, 0.72, 0.70, 0.73, 0.84, 0.84, 0.84,
      0.81, 0.76, 0.73, 0.71, 0.62, 0.75, 0.75, 0.77, 0.77, 0.72, 0.67, 0.63}};
 
+  double qe_space_9002224[64] = {
+    0.842, 0.922, 0.947, 0.953, 0.952, 0.944, 0.9,   0.76,  0.885, 0.954, 0.971, 0.977, 0.979,
+    0.973, 0.959, 0.856, 0.908, 0.969, 0.984, 0.99,  0.992, 0.988, 0.976, 0.925, 0.922, 0.974,
+    0.989, 0.997, 0.998, 0.995, 0.985, 0.954, 0.923, 0.975, 0.99,  0.998, 1,     0.997, 0.992,
+    0.967, 0.917, 0.965, 0.978, 0.984, 0.988, 0.993, 0.983, 0.954, 0.895, 0.942, 0.955, 0.962,
+    0.973, 0.973, 0.961, 0.936, 0.872, 0.916, 0.931, 0.941, 0.952, 0.955, 0.939, 0.911};
+
   fMcpLayout = PrtManager::Instance()->getRun()->getPmtLayout();
   fRunType = PrtManager::Instance()->getRun()->getRunType();
   int npmt = PrtManager::Instance()->getRun()->getNpmt();
@@ -87,10 +94,10 @@ void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
         if (m == 7) fQe_space[m][i] = 0.9 * qe_m2018[m][i];
       }
     }
-  } else if (fMcpLayout == 24) {
-    for (int m = 0; m < 8; m++) {
+  } else if (fMcpLayout == 12) {
+    for (int m = 0; m < 12; m++) {
       for (int i = 0; i < 64; i++) {
-        fQe_space[m][i] = qe_m2018[m][i];
+        fQe_space[m][i] = qe_space_9002224[i];
       }
     }
   } else {

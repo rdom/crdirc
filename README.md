@@ -62,7 +62,7 @@ example with muons:
 -c   MCP layout
                 0    MCP covers all FD plain
 		4    2x2 old MCP-PMT (8x8 pixels, 0.65 CE) 
-		24   3x4 new MCP-PMT (8x8 pixels, 0.95 CE) 
+		12   3x4 new MCP-PMT (8x8 pixels, 0.95 CE) 
 		2015
 		2016
 		20171 2x4 layout
