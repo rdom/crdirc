@@ -73,6 +73,12 @@ PrtStackingAction::PrtStackingAction() : G4UserStackingAction(), fScintillationC
 
     fDetEff[0] = new TGraph(1000, lambda[0], fEfficiencyR[0]);
     fDetEff[1] = new TGraph(1000, lambda[1], fEfficiencyR[1]);
+    fDetEff[2] = new TGraph(1000, lambda[1], fEfficiencyR[1]);
+
+    // fDetEff[1]->Draw("APL");
+    // fDetEff[0]->Draw("PL same");
+    // gPad->Update();
+    // gPad->WaitPrimitive();
   }
 }
 

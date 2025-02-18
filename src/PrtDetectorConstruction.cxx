@@ -88,28 +88,19 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fLens[2] = 12;
   }
 
-  if (fMcpLayout == 2012) {
-    fNCol = 3;
-    fPrizm[2] = 30 + fPrizm[1] * tan(30 * deg);
-    fPrizm[3] = 30;
-  }
-
-  if (fMcpLayout == 2015) {
-  }
-
   if (fMcpLayout == 2016) {
     fNCol = 3;
     fPrizm[2] = 30 + fPrizm[1] * tan(30 * deg);
     fPrizm[3] = 30;
   }
 
-  if (fMcpLayout == 2017 || fMcpLayout == 2030) {
+  if (fMcpLayout == 2030 || fMcpLayout == 24) {
     fNCol = 4;
   }
 
-  if (fMcpLayout == 2018) {
+  if (fMcpLayout == 4) {
     fNRow = 2;
-    fNCol = 4;
+    fNCol = 2;
   }
 
   if (fMcpLayout == 20171) {
@@ -158,34 +149,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   fCenterShift = G4ThreeVector(0., 0., 0.);
 
-  if (fGeomId == 2015) {
-    // fPrismRadiatorStep = fPrizm[3]/2.-fBar[0]/2.;
-    // fPrismRadiatorStep = fBar[0]/2.-fPrizm[3]/2.   +30.6;
-    // fCenterShift =  G4ThreeVector(fBar[2]/2.,0,-132);
-
-    fCenterShift = G4ThreeVector(0.5 * fBar[2] - 96, -0.5 * fPrizm[0] + fRun->getBeamX(), -122);
-  }
-
-  if (fGeomId == 2016) {
-    fPrizm[0] = 170;
-    fPrizm[1] = 300;
-    fPrizm[3] = 30;
-    fPrizm[2] = fPrizm[3] + fPrizm[1] * tan(30 * deg);
-    fCenterShift = G4ThreeVector(0.5 * fBar[2] - 96, -0.5 * fPrizm[0] + fRun->getBeamX(),
-                                 -(279 - 187.5 - fBar[0]));
-  }
-
   fOffset = 0;
-  if (fGeomId == 2017) {
-    fOffset = 146;
-    fPrizm[0] = 175;
-    fPrizm[1] = 300;
-    fPrizm[3] = 50;
-    fPrizm[2] = fPrizm[3] + fPrizm[1] * tan(33 * deg);
-    fCenterShift =
-      G4ThreeVector(0.5 * fBar[2] - fOffset, -0.5 * fPrizm[0] + fRun->getBeamX(), -100);
-  }
-
   if (fGeomId == 2018 || fGeomId == 2) {
     fOffset = 146;
     fPrizm[0] = 175;
@@ -334,14 +298,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     greased += cookiew;
   }
 
-  // // The Mirror gap
-  // double mirrorgap=0.1*mm;
-  // G4Box* gMirrorGap = new G4Box("gMirrorGap",fMirror[0]/2.,fMirror[1]/2.,0.5*mirrorgap);
-  // lMirrorGap = new G4LogicalVolume(gMirrorGap,defaultMaterial,"lMirrorGap",0,0,0);
-  // wMirrorGap =new
-  // G4PVPlacement(0,G4ThreeVector(radiatorStepY,radiatorStepX,-fBar[2]/2.-0.5*mirrorgap),lMirrorGap,"wMirrorGap",
-  // lDirc,false,0);
-
   // The Mirror
   G4Box *gMirror = new G4Box("gMirror", fMirror[0] / 2., fMirror[1] / 2., fMirror[2] / 2.);
   lMirror = new G4LogicalVolume(gMirror, MirrorMaterial, "lMirror", 0, 0, 0);
@@ -364,7 +320,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       new G4IntersectionSolid("Ftub*Sphere", gftub, gsphere, new G4RotationMatrix(), zTrans1);
     G4SubtractionSolid *gLens2 =
       new G4SubtractionSolid("Ftub-Sphere", gftub, gsphere, new G4RotationMatrix(), zTrans1);
-    lLens1 = new G4LogicalVolume(gLens1, Nlak33aMaterial, "lLens1", 0, 0, 0); // Nlak33aMaterial
+    lLens1 = new G4LogicalVolume(gLens1, Nlak33aMaterial, "lLens1", 0, 0, 0);
     lLens2 = new G4LogicalVolume(gLens2, BarMaterial, "lLens2", 0, 0, 0);
   }
 
@@ -379,7 +335,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       new G4IntersectionSolid("Fbox*Cylinder", gfbox, gcylinder, xRot, zTrans);
     G4SubtractionSolid *gLens2 =
       new G4SubtractionSolid("Fbox-Cylinder", gfbox, gcylinder, xRot, zTrans);
-    lLens1 = new G4LogicalVolume(gLens1, Nlak33aMaterial, "lLens1", 0, 0, 0); // Nlak33aMaterial
+    lLens1 = new G4LogicalVolume(gLens1, Nlak33aMaterial, "lLens1", 0, 0, 0);
     lLens2 = new G4LogicalVolume(gLens2, BarMaterial, "lLens2", 0, 0, 0);
   }
 
@@ -747,28 +703,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         if (j != 1) shiftx -= 14; //(3/2.)*fMcpActive[0]/8.;
         double shifty = (fMcpTotal[0] + 3) * (j - 1);
 
-        // // cad version
-        // double shiftx = i*(fMcpTotal[0]+14)-fPrizm[3]/2+fMcpActive[0]/2.;
-        // if(j!=1) shiftx += 14;
-        // shiftx -= 14;
-        // double shifty = j*fMcpTotal[0]-fMcpTotal[0]+3*(j-1);
-
-        if (fMcpLayout == 2012) {
-          shiftx = i * (fMcpActive[0] + 2 + 6) - fBar[0] / 2. + fMcpActive[0] / 2. - 3 - 1;
-          shifty = j * (fMcpActive[0] + 9 + 6) - fPrizm[0] / 2. +
-                   fMcpActive[0] / 2.; //-fPrizm[2]/2.-fPrizm[3]/2.
-        }
-
-        if (fMcpLayout == 2015) {
-          double msh = 9; //(fPrizm[2]-5*fMcpTotal[0])/4.;
-          shiftx = i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2.;
-          // if(j==1) shiftx -= 3*fMcpActive[0]/8.;
-          if (j == 1)
-            shiftx -= (3 / 2.) * fMcpActive[0] /
-                      8.; // i*(fMcpTotal[0]+3)-fPrizm[3]/2+fMcpActive[0]/2.+2*fMcpActive[0]/8.;
-          shifty = (fMcpTotal[0] + 3) * (j - 1);
-        }
-
         if (fMcpLayout == 2016) { // 9MCP
           double msh = 13;        //(fPrizm[2]-5*fMcpTotal[0])/4.;
           shiftx = 3 + i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2.;
@@ -794,38 +728,26 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
           shifty = (fMcpTotal[0] + 3) * (j - 1);
         }
 
-        if (fMcpLayout == 2017 || fMcpLayout == 2030) {
+        if (fMcpLayout == 2030 || fMcpLayout == 24) {
           double msh = 3;
           shiftx = i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2. + 3;
           shifty = (fMcpTotal[0] + 3) * (j - 1);
         }
 
-        if (fMcpLayout == 2018) {
+        if (fMcpLayout == 4) {
           double msh = 3;
-          shiftx = i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2. + 3;
-          // if(j==1) shiftx += (1/2.)*fMcpActive[0]/8.;
+          shiftx = 2 * (fMcpTotal[0] + msh) + i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2. + 3;
           shifty = (fMcpTotal[0] + 3) * (j - 1) + 0.5 * fMcpTotal[0] + 1.5;
         }
 
-        if (fMcpLayout == 20171) {
+        if (fMcpLayout == 2021) {
           double msh = 3;
           shiftx = i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2. + 3;
-          //	  if(j==1) shiftx += (1/2.)*fMcpActive[0]/8.;
-          shifty = (fMcpTotal[0] + 3) * (j - 1) + fMcpActive[0] / 2. + 7;
-        }
 
-        if (fMcpLayout == 2021) {
-          // double msh = 0; // true 2021
-          double msh = 3; // 2021 layout for 2017 prototupe
-          shiftx = i * (fMcpTotal[0] + msh) - fPrizm[3] / 2 + fMcpActive[0] / 2. + 3;
-
-          // shifty = (fMcpTotal[0]+1)*(j-1);
-          shifty = (fMcpTotal[0] + 3) * (j - 1); // 2021 layout for 2017 prototupe
+          shifty = (fMcpTotal[0] + 3) * (j - 1);
           if (i == 0) {
             if (j == 0) continue;
-            // shifty = (fMcpTotal[0]+1)*(j-1)-0.5*fMcpTotal[0]-0.5;
-            shifty = (fMcpTotal[0] + 3) * (j - 1) - 0.5 * fMcpTotal[0] -
-                     0.5; // 2021 layout for 2017 prototupe
+            shifty = (fMcpTotal[0] + 3) * (j - 1) - 0.5 * fMcpTotal[0] - 0.5;
           }
           new G4PVPlacement(
             0,
