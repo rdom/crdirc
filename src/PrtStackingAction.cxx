@@ -117,29 +117,28 @@ PrtStackingAction::PrtStackingAction() : G4UserStackingAction(), fScintillationC
       0.14, 0.13,  0.13,  0.11,  0.08,  0,    0.01,  0.03,  0.02,  0.04, 0.07,  0,     0.05,  0.09,
       0.07, 0.1,   0.14,  0.17};
 
-    double lambda[3][1000] = {{0}},
-           fEfficiencyR[3][1000] = {{0}}, fCollectionEff = 0.65;
+    double lambda[3][1000] = {{0}}, efficiencyR[3][1000] = {{0}}, collectionEff = 0.65;
 
     for (int i = 0; i < 1000; i++) {
       // Std QE (Photonis 2)
-      fCollectionEff = 0.65;
+      collectionEff = 0.65;
       lambda[0][i] = 200 + i;
-      fEfficiencyR[0][i] = (i > 40 && i < 500) ? eff_std[i] * 0.01 * fCollectionEff : 0;
+      efficiencyR[0][i] = (i > 40 && i < 500) ? eff_std[i] * 0.01 * collectionEff : 0;
 
       // HIQ 400 (Photonis 1)
-      fCollectionEff = 0.95;
+      collectionEff = 0.95;
       lambda[1][i] = 180 + i * 2;
-      fEfficiencyR[1][i] = (i < 251) ? eff_400[i] * 0.01 * fCollectionEff : 0;
+      efficiencyR[1][i] = (i < 251) ? eff_400[i] * 0.01 * collectionEff : 0;
 
       // panda 9002224
-      fCollectionEff = 0.95;
+      collectionEff = 0.95;
       lambda[2][i] = 200 + i * 2;
-      fEfficiencyR[2][i] = (lambda[2][i] >= 240 && lambda[2][i] <= 850) ? eff_9002224[i] * 0.01 * fCollectionEff : 0;
+      efficiencyR[2][i] = (lambda[2][i] >= 240 && lambda[2][i] <= 850) ? eff_9002224[i] * 0.01 * collectionEff : 0;
     }
 
-    fDetEff[0] = new TGraph(1000, lambda[0], fEfficiencyR[0]);
-    fDetEff[1] = new TGraph(1000, lambda[1], fEfficiencyR[1]);
-    fDetEff[2] = new TGraph(1000, lambda[2], fEfficiencyR[2]);
+    fDetEff[0] = new TGraph(1000, lambda[0], efficiencyR[0]);
+    fDetEff[1] = new TGraph(1000, lambda[1], efficiencyR[1]);
+    fDetEff[2] = new TGraph(1000, lambda[2], efficiencyR[2]);
 
     // fDetEff[1]->Draw("APL");
     // fDetEff[0]->Draw("PL same");

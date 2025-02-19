@@ -140,6 +140,14 @@ int main(int argc, char **argv) {
     run->setRadiator(radiator);
     run->setLens(lensId);
     run->setPmtLayout(pmtLayout);
+    if (pmtLayout == 4) {
+      run->setNpmt(4);
+      run->setNpix(64);
+    }
+    if (pmtLayout == 12) {
+      run->setNpmt(12);
+      run->setNpix(64); // max number of pixels
+    }
     run->setTrackingResTheta(trackingres);
     run->setTrackingResPhi(trackingres);
     run->setDarkNoise(dark_noise);
