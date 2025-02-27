@@ -20,34 +20,34 @@ make -j4
 
 example:
 
+```
 ./crdirc -study 500 -r 0 -i hits.root -e 10000000 -b 1
-
+```
 with event display:
+```
 ./crdirc -study 500 -r 0 -i hits.root -e 100
 ```
 ![alt text](https://github.com/rdom/crdirc/raw/master/pics/event_display.png)
 
-```
 example with muons:
+```
 ./crdirc -study 500 -x mu- -p 10 -i hits.root -e 20 -w 1
-
 ```
 ## Example of script usage from macro folder
 
+use "-b 1" for lage number of event
 ```
-# use "-b 1" for lage number of event
 ./crdirc -study 500 -x mu- -p 10 -i hits.root -e 1000 -w 1 -b 1
 
 root draw_hp.C'("../build/hits.root")'
 root draw_tracker.C'("../build/hits.root")'
-
 ```
 
 
 ## Synopsis
 ```
 crdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
-
+```
 
 ## Options
 ```
