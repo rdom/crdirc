@@ -1,4 +1,8 @@
+#if defined(__ACLIC__)
 #include "../src/PrtTools.h"
+#else
+R__LOAD_LIBRARY(../build/libPrt.so)
+#endif
 
 void draw_mom(TString infile = "../build/hits.root") {
 
@@ -52,6 +56,5 @@ void draw_mom(TString infile = "../build/hits.root") {
 
   
   t.save_canvas("data/draw_mom", 0);
-  
-  //  t.write_string("digi.csv", t.pix_digi("m,p,v\n"));  
+ 
 }

@@ -1,9 +1,22 @@
 DIRC simulations with Cosmic Ray generator (CRY 1.7) 
 
-
-## Synopsis
+## Requirments
 ```
-crdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
+root 6
+geant4
+QT4
+```
+
+## Installation
+```
+git clone https://github.com/rdom/crdirc
+
+cd crdirc
+mkdir build
+cd build
+cmake ..
+make -j4
+```
 
 example:
 
@@ -17,7 +30,24 @@ with event display:
 ```
 example with muons:
 ./crdirc -study 500 -x mu- -p 10 -i hits.root -e 20 -w 1
+
 ```
+## Example of script usage from macro folder
+
+```
+# use "-b 1" for lage number of event
+./crdirc -study 500 -x mu- -p 10 -i hits.root -e 1000 -w 1 -b 1
+
+root draw_hp.C'("../build/hits.root")'
+root draw_tracker.C'("../build/hits.root")'
+
+```
+
+
+## Synopsis
+```
+crdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
+
 
 ## Options
 ```
@@ -123,26 +153,3 @@ example with muons:
        
 ```
 
-## Requirments
-```
-root 6
-geant4
-QT4
-```
-
-## Installation
-```
-git clone https://github.com/rdom/crdirc
-git clone https://github.com/rdom/prttools
-
-cd crdirc
-mkdir build
-cd build
-cmake ..
-make -j4
-```
-
-## Example of script usage from macro folder
-```
-root loadlib.C draw_mom.C'("../build/hits.root")'
-```
