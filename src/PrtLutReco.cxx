@@ -226,7 +226,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   if (infile.Contains("415_4")) range = 180;
   if (infile.Contains("436_4")) range = 180;
 
-  int nrange = 160;
+  int nrange = 100;
   if(fnpix>65){
     nrange = 200;
   }
@@ -350,15 +350,6 @@ void PrtLutReco::Run(int start, int end) {
   if (end == 0) end = nEvents;
 
   int pdfend = 50000;
-  if (fPdfPath.Contains("beam_415_2")) pdfend = 10000;
-  if (fPdfPath.Contains("beam_415_3")) pdfend = 10000;
-  if (fPdfPath.Contains("beam_415_4")) pdfend = 50000;
-  if (fPdfPath.Contains("beam_415_9")) pdfend = 200000;
-  if (fPdfPath.Contains("beam_415_10")) pdfend = 300000;
-  if (fPdfPath.Contains("beam_436")) pdfend = 50000;
-  if (fPdfPath.Contains("beam_436_3")) pdfend = 10000;
-  if (fPdfPath.Contains("S.pdf1.root")) pdfend = 5000;
-
   if (fMethod == 4) {
     if(bsim) start = 0;
     else start = pdfend;
@@ -437,18 +428,23 @@ void PrtLutReco::Run(int start, int end) {
     }
 
     //smear track
-    momInBar0 = momInBar;
-    double smearangle =  gRandom->Gaus(0,0.001);
-    momInBar.RotateY(smearangle);
-    momInBar.Rotate(gRandom->Uniform(0,TMath::TwoPi()),momInBar0);
+    // momInBar0 = momInBar;
+    // double smearangle =  gRandom->Gaus(0,0.001);
+    // momInBar.RotateX(smearangle);
+    // momInBar.RotateY(smearangle);    
+    // momInBar.Rotate(gRandom->Uniform(0,TMath::TwoPi()),momInBar0);
 
+    double trackingResTheta = 0.001;
+    momInBar.SetTheta(gRandom->Gaus(momInBar.Theta(), trackingResTheta));
+    momInBar.SetPhi(gRandom->Gaus(momInBar.Phi(), trackingResTheta));
+    
     if (fVerbose == 3) {
       cz = momInBar.Unit();
       cz = TVector3(-cz.X(), cz.Y(), cz.Z());
     }
 
     // if(fMethod==2 && pid==4) continue;
-
+ 
     double sm = 0;
     if (!bsim) {
       int gch, ndirc(0), t2(0), t3h(0), t3v(0), str1(0), stl1(0), str2(0), stl2(0);
@@ -588,7 +584,7 @@ void PrtLutReco::Run(int start, int end) {
       for (int i = 0; i < size; i++) {
 
         weight = 12 * fLutNode[ch]->GetWeight(i);
-        if (fnpix > 64) dird = fLutNode[ch]->GetEntry(i);
+        if (fnpix >= 64) dird = fLutNode[ch]->GetEntry(i);
         else dird = fLutNode[ch]->GetEntryCs(i, nedge);
         evtime = fLutNode[ch]->GetTime(i);	
         int lpathid = fLutNode[ch]->GetPathId(i);
@@ -629,7 +625,7 @@ void PrtLutReco::Run(int start, int end) {
 	  
           if (samepath) fHist0i->Fill(tdiff);
           tangle = momInBar.Angle(dir) + fCor_angle[mcpid];
-
+ 
           if (fabs(tdiff) < 1.5 && fCor_level > 0) {
             if (fabs(prtangle - 90) < 16) {
               if (reflected) tangle -= 0.0075 * tdiff; // chromatic correction
@@ -1211,7 +1207,10 @@ void PrtLutReco::Run(int start, int end) {
 
       std::cout << "ctr_sigma " << ctr_sigma << " +/- " << ctr_err << std::endl;
 
-      fCtr->Draw();      
+      fCtr->Draw();
+
+      ft.add_canvas("nph", 800, 400);      
+      hNph[1]->Draw();
     }
   }
 

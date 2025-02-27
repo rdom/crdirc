@@ -138,10 +138,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fMirror[1] = 180;
   }
 
-  // X configuration
-  double radiatorStepY = fRun->getPrismStepY();
-  if (radiatorStepY != 0) radiatorStepY += fBar[0] / 2. - fPrizm[3] / 2.;
-  double radiatorStepX = -(fBar[1] - fPrizm[0]) / 2. - fPrismStepX;
+
 
   fCenterShift = G4ThreeVector(0., 0., 0.);
  
@@ -165,6 +162,11 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fCenterShift = G4ThreeVector(0., 0., 0.);
   }
 
+  // X configuration
+  double radiatorStepY = fRun->getPrismStepY();
+  if (radiatorStepY != 0) radiatorStepY += fBar[0] / 2. - fPrizm[3] / 2.;
+  double radiatorStepX = 0 ;//-(fBar[1] - fPrizm[0]) / 2. - fPrismStepX;
+
   if (fRunType == 6) { // focal plane scan
     fPrizm[1] = 60;
     fPrizm[3] = 500;
@@ -172,14 +174,14 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     radiatorStepX = 0;
   }
 
-  if (fGeomId > 2014 && (fRadiatorId > 1)) radiatorStepX = -(fBar[1] - fPrizm[0]) / 2.;
-  if (fRadiatorId > 2) radiatorStepX = 0;
+  // if (fGeomId > 2014 && (fRadiatorId > 1)) radiatorStepX = -(fBar[1] - fPrizm[0]) / 2.;
+  // if (fRadiatorId > 2) radiatorStepX = 0;
 
   fRun->setRadiatorL(fBar[2]);
   fRun->setRadiatorW(fBar[1]);
   fRun->setRadiatorH(fBar[0]);
   fRun->setPrismStepY(radiatorStepY);
-  fRun->setPrismStepX(radiatorStepX);
+  // fRun->setPrismStepX(radiatorStepX);
 
   fPrtRot = new G4RotationMatrix();
   // create a messenger for this class
@@ -232,9 +234,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   lCeiling = new G4LogicalVolume(gCeiling, ConcreteMaterial, "lCeiling", 0, 0, 0);
   
   new G4PVPlacement(0, G4ThreeVector(0, 0, -1000), lCeiling, "wCeiling", lExpHall, false, 0);
-  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + fTest1), lTracker1, "wTracker1", lExpHall, 0, 0);
-  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + fTest2), lTracker2, "wTracker2", lExpHall, 0, 0);
-  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + fTest3), lTracker3, "wTracker3", lExpHall, 0, 0);
+  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + 1300), lTracker1, "wTracker1", lExpHall, 0, 0);
+  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + 300), lTracker2, "wTracker2", lExpHall, 0, 0);
+  new G4PVPlacement(0, G4ThreeVector(0, 0, dircz -400), lTracker3, "wTracker3", lExpHall, 0, 0);
 
   // The DIRC
   G4Box *gDirc = new G4Box("gDirc", 250, 200, fBar[2] / 2. + fPrizm[1] + 50);

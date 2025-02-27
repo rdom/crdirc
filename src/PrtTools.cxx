@@ -173,7 +173,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     toppad = new TPad(sid, "T", 0.10, 0.025, 0.82, 0.975);
   else if (_pmtlayout == 2032)
     toppad = new TPad(sid, "T", 0.04, 0.025, 0.91, 0.975);
-  else if (_pmtlayout == 2030)
+  else if (_pmtlayout == 2030 || _pmtlayout == 12)
     toppad = new TPad(sid, "T", 0.12, 0.01, 0.80, 0.99);
   else if (_pmtlayout == 3000)
     toppad = new TPad(sid, "T", 0.005, 0.07, 0.95, 0.93);
@@ -194,9 +194,13 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     ncol = 4;
   }
   if (_pmtlayout == 2021) ncol = 4;
-  if (_pmtlayout == 2030) {
+  if (_pmtlayout == 2030 || _pmtlayout == 12) {
     nrow = 3;
     ncol = 4;
+  }
+  if (_pmtlayout == 4) {
+    nrow = 2;
+    ncol = 2;
   }
   if (_pmtlayout == 2032) {
     nrow = 4;
@@ -209,10 +213,6 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   if (_pmtlayout == 3000) {
     nrow = 6;
     ncol = 18;
-  }
-  if (_pmtlayout == 4) {
-    nrow = 2;
-    ncol = 3;
   }
   if (_pmtlayout == 3) {
     nrow = 1;
@@ -292,7 +292,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           tbh = 0.001;
           padi = j * ncol + i;
         }
-        if (_pmtlayout == 2030 || _run->getGeometry() == 2) {
+        if (_pmtlayout == 2030 || _pmtlayout == 12) {
           margin = 0.1;
           shift = 0;
           shiftw = 0.01;
@@ -309,12 +309,12 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           padi = i * nrow + j;
         }
 	if (_pmtlayout == 4) {
-          margin = 0.1;
+          margin = 0.5;
           shift = 0;
           shiftw = 0.01;
           tbw = 0.001;
           tbh = 0.005;
-          padi = j * ncol + i;
+          padi = i * ncol + j;
         }
 	if (_pmtlayout == 3) {
           margin = 0.05;

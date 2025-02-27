@@ -8,7 +8,7 @@ tseed=$(($(date +%s%N)/1000000-1393400000000))
 echo $tseed
 
 for i in {1..20}; do
-    ../build/crdirc -r 0 -seed $tseed$i -study 500 -theta 90 -o b_h$i.root -e 8000000 -c 4 -b 1 > b_l$i.log &
+    ../build/crdirc -r 0 -seed $tseed$i -study 500 -theta 60 -o b_h$i.root -e 8000000 -c 2030 -b 1 > b_l$i.log &
 done
 
 
@@ -27,4 +27,4 @@ done
 
 sleep 2
 
-hadd -f hits_90_c4.root b_h*.root
+hadd -f hits_60_c2030.root b_h*.root

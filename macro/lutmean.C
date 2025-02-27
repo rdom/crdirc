@@ -1,3 +1,8 @@
+#if defined(__ACLIC__)
+#include "PrtTools.h"
+#else
+R__LOAD_LIBRARY(../build/libPrt.so)
+#endif
 
 void lutmean(TString inFile = "../data/lut.root") {
   TString outFile = inFile.Copy().ReplaceAll(".root", ".avr.root");
@@ -9,7 +14,7 @@ void lutmean(TString inFile = "../data/lut.root") {
 
   auto run = t.get_run(inFile);
   int nch = run->getNpmt() * run->getNpix();
-
+ 
   TClonesArray &fLutaNew = *fLutNew;
   for (Long64_t n = 0; n < nch; n++) {
     new ((fLutaNew)[n]) PrtLutNode(-1);
@@ -82,8 +87,8 @@ void lutmean(TString inFile = "../data/lut.root") {
       if (rArray[j] > 15) continue;
 
       if (hDir->GetStdDev() > 0.02) {
-        std::cout << inode << " " << pArray[j]
-                  << " hDir->GetStdDev() ================  " << hDir->GetStdDev() << std::endl;
+        std::cout << "ch " << inode << " path " << pArray[j] << " dev " << hDir->GetStdDev()
+                  << std::endl;
 
         c->cd(1);
         hTime->Draw();

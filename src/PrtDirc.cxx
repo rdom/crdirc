@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     batchmode(0), physlist(0), pmtLayout(2030), correction(2), field(0), ev(0), radiator(1),
     lensId(3), displayOpt(0);
   double momentum(10), theta(90), phi(0), beamX(85), beamZ(200), trackingres(0.0005), dark_noise(0),
-    prismStepX(70), prismStepY(16.45),timeSigma(0.1), timeCut(0.5), testVal1(0), testVal2(0),
+    prismStepX(0), prismStepY(16.45),timeSigma(0.1), timeCut(0.5), testVal1(0), testVal2(0),
     testVal3(0);
   long seed = 0;
 
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     if (runtype == 1) {
       particle = "opticalphoton";
       momentum = 3.18e-09;
-      theta = 180;
+      theta = 0;
     }
   }
   
@@ -125,12 +125,7 @@ int main(int argc, char **argv) {
 
   if (infile != "") run = t.get_run(infile);
 
-  run->setRunType(runtype);
-  // set default value for tracker's positions
-  run->setTest1(1300);
-  run->setTest2(300);
-  run->setTest3(-400);
-
+  run->setRunType(runtype);  
   if (runtype < 2) {
     run->setMomentum(momentum);
     run->setPhysList(physlist);
@@ -164,18 +159,18 @@ int main(int argc, char **argv) {
   run->setTimeSigma(timeSigma);
   run->setTimeCut(timeCut);
   run->setStudy(study);
-  // run->setTest1(testVal1);
-  // run->setTest2(testVal2);
-  // run->setTest3(testVal3);
+  run->setTest1(testVal1);
+  run->setTest2(testVal2);
+  run->setTest3(testVal3);
 
   PrtManager::Instance(outfile, run);
   // PrtManager::Instance()->setDisplayOpt(displayOpt);  
   std::cout << run->getInfo() << std::endl;
 
   if (runtype == 2 || runtype == 3 || runtype == 4 || runtype > 19) {
-    // PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, nnfile, verbose);
+    PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, verbose);
     // PrtReco *reco = new PrtReco(infile, lutfile, pdffile, nnfile, verbose);
-    // reco->Run(firstevent, events);
+    reco->Run(firstevent, events);
     return 0;
   }
 
@@ -214,10 +209,10 @@ int main(int argc, char **argv) {
   } else {
     // UImanager->ApplyCommand("/control/execute ../prt.mac");
 
-    UImanager->ApplyCommand("/gun/direction 0 0 1");
-    UImanager->ApplyCommand("/gun/position 0 0 -100 cm");
-    UImanager->ApplyCommand("/Prt/geom/prtRotation 90 deg");
-    UImanager->ApplyCommand("/gun/direction 0 0 1");
+    // UImanager->ApplyCommand("/gun/direction 0 0 1");
+    // UImanager->ApplyCommand("/gun/position 0 0 -100 cm");
+    // UImanager->ApplyCommand("/Prt/geom/prtRotation 90 deg");
+    // UImanager->ApplyCommand("/gun/direction 0 0 1");
   }
 
   if (physlist == 1) {
