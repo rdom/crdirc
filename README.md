@@ -27,13 +27,13 @@ with event display:
 ```
 ./crdirc -study 500 -r 0 -i hits.root -e 200
 ```
-![alt text](https://github.com/rdom/crdirc/raw/master/pics/event_display_cry.png)
+![alt text](https://github.com/rdom/crdirc/blob/master/pics/event_dispaly_cry.png)
 
 example with muons:
 ```
 ./crdirc -study 500 -x mu- -p 10 -i hits.root -e 20 -w 1
 ```
-![alt text](https://github.com/rdom/crdirc/raw/master/pics/event_display_mu.png)
+![alt text](https://github.com/rdom/crdirc/blob/master/pics/event_dispaly_mu.png)
 
 ## Example of script usage from macro folder
 
