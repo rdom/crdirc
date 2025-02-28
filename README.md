@@ -37,7 +37,7 @@ example with muons:
 
 ## Example of script usage from macro folder
 
-use "-b 1" for lage number of event
+use "-b 1" for a lage number of events
 ```
 ./crdirc -study 500 -x mu- -p 10 -i hits.root -e 1000 -w 1 -b 1
 
