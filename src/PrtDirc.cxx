@@ -17,7 +17,7 @@
 
 #include "PrtManager.h"
 #include "PrtLutReco.h"
-// #include "PrtReco.h"
+#include "PrtReco.h"
 #include "PrtPhysicsList.h"
 #include "PrtDetectorConstruction.h"
 #include "PrtActionInitialization.h"
@@ -143,8 +143,6 @@ int main(int argc, char **argv) {
       run->setNpmt(12);
       run->setNpix(64); // max number of pixels
     }
-    run->setTrackingResTheta(trackingres);
-    run->setTrackingResPhi(trackingres);
     run->setDarkNoise(dark_noise);
     run->setTheta(theta);
     run->setPhi(phi);
@@ -155,6 +153,8 @@ int main(int argc, char **argv) {
     run->setPid(pdgid);
   }
 
+  run->setTrackingResTheta(trackingres);
+  run->setTrackingResPhi(trackingres);  
   run->setCorrection(correction);
   run->setTimeSigma(timeSigma);
   run->setTimeCut(timeCut);
@@ -168,8 +168,8 @@ int main(int argc, char **argv) {
   std::cout << run->getInfo() << std::endl;
 
   if (runtype == 2 || runtype == 3 || runtype == 4 || runtype > 19) {
-    PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, verbose);
-    // PrtReco *reco = new PrtReco(infile, lutfile, pdffile, nnfile, verbose);
+    // PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, verbose);
+    PrtReco *reco = new PrtReco(infile, lutfile, pdffile, nnfile, verbose);
     reco->Run(firstevent, events);
     return 0;
   }
@@ -199,6 +199,7 @@ int main(int argc, char **argv) {
 
   // Initialize visualization
   G4VisManager *visManager = new G4VisExecutive;
+  visManager->SetVerboseLevel(0); // set to 3 for graphics systems info
   visManager->Initialize();
 
   // Get the pointer to the User Interface manager
@@ -224,6 +225,12 @@ int main(int argc, char **argv) {
     UImanager->ApplyCommand("/process/inactivate conv all");
   }
 
+  // disable geant's startup messages
+  UImanager->ApplyCommand(G4String("/process/verbose       0"));
+  UImanager->ApplyCommand(G4String("/process/em/verbose    0"));
+  UImanager->ApplyCommand(G4String("/process/had/verbose   0"));
+  UImanager->ApplyCommand(G4String("/process/eLoss/verbose 0"));
+  
   if (batchmode == 1) { // batch mode
     UImanager->ApplyCommand(Form("/run/beamOn %d", events));
   } else { // UI session for interactive mode

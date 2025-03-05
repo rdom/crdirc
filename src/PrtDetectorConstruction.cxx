@@ -239,8 +239,18 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   new G4PVPlacement(0, G4ThreeVector(0, 0, dircz -400), lTracker3, "wTracker3", lExpHall, 0, 0);
 
   // The DIRC
-  G4Box *gDirc = new G4Box("gDirc", 250, 200, fBar[2] / 2. + fPrizm[1] + 50);
+  // G4Box *gDirc = new G4Box("gDirc", 250, 200, fBar[2] / 2. + fPrizm[1] + 50);
+
+  G4Box *gDirc0 = new G4Box("gDirc0", 0.5 * fBar[0] + 2, 0.5 * fPrizm[0] + 10, 0.5 * fBar[2] + 50);
+  G4Trap *gDirc1 =
+    new G4Trap("gDirc1", fPrizm[0] + 50, fPrizm[1] + 50, fPrizm[2] + 50, fPrizm[3] + 50);
+  auto dr = new G4RotationMatrix();
+  dr->rotateX(0.5 * M_PI);
+  auto dshift = G4ThreeVector((fPrizm[2] + fPrizm[3]) / 4. - fPrizm[3] / 2., 0,
+                              0.5 * fBar[2] + 0.5 * fPrizm[1] + fLens[2]);
+  auto gDirc = new G4UnionSolid("lDirc", gDirc0, gDirc1, dr, dshift);
   lDirc = new G4LogicalVolume(gDirc, defaultMaterial, "lDirc", 0, 0, 0);
+
   G4ThreeVector dircpos = G4ThreeVector(0, 0, 0);
   if (fCenterShift.mag() != 0) {
     dircpos = fCenterShift; // G4ThreeVector(fCenterShift, 0., 0.);
@@ -251,14 +261,14 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   fPrtRot->rotateY((-180 - fRun->getTheta()) * deg);
   fPrtRot->rotateX((180 + fRun->getPhi()) * deg);
 
-  wDirc = new G4PVPlacement(fPrtRot, dircpos + G4ThreeVector(-zshift, 0, dircz), lDirc, "wDirc",
-                            lExpHall, false, 0);
+  new G4PVPlacement(fPrtRot, dircpos + G4ThreeVector(-zshift, 0, dircz), lDirc, "wDirc", lExpHall,
+                    false, 0);
 
   // The Bar
   G4Box *gBar = new G4Box("gBar", fBar[0] / 2., fBar[1] / 2., fBar[2] / 2.);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
-  wBar = new G4PVPlacement(0, G4ThreeVector(radiatorStepY, radiatorStepX, 0), lBar, "wBar", lDirc,
-                           false, 0);
+  new G4PVPlacement(0, G4ThreeVector(radiatorStepY, radiatorStepX, 0), lBar, "wBar", lDirc, false,
+                    0);
 
   // radiator covered with grease
   double greased = 0 * mm;
@@ -299,9 +309,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   // The Mirror
   G4Box *gMirror = new G4Box("gMirror", fMirror[0] / 2., fMirror[1] / 2., fMirror[2] / 2.);
   lMirror = new G4LogicalVolume(gMirror, MirrorMaterial, "lMirror", 0, 0, 0);
-  wMirror = new G4PVPlacement(
-    0, G4ThreeVector(radiatorStepY, radiatorStepX, -fBar[2] / 2. - fMirror[2] / 2.), lMirror,
-    "wMirror", lDirc, false, 0); //-mirrorgap
+  new G4PVPlacement(0, G4ThreeVector(radiatorStepY, radiatorStepX, -fBar[2] / 2. - fMirror[2] / 2.),
+                    lMirror, "wMirror", lDirc, false, 0); //-mirrorgap
 
   // The Lens
   G4Box *gfbox = new G4Box("Fbox", fLens[0] / 2., fLens[1] / 2., fLens[2] / 2.);
@@ -651,8 +660,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   G4RotationMatrix *xRot = new G4RotationMatrix();
   xRot->rotateX(M_PI / 2. * rad);
-  fPrismShift = G4ThreeVector((fPrizm[2] + fPrizm[3]) / 4. - fPrizm[3] / 2., 0,
-                              0.5 * fBar[2] + greased + 0.5 * fPrizm[1] + fLens[2]);
   fPrismShift = G4ThreeVector((fPrizm[2] + fPrizm[3]) / 4. - fPrizm[3] / 2., 0,
                               0.5 * fBar[2] + greased + 0.5 * fPrizm[1] + fLens[2]);
   new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 0);

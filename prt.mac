@@ -1,3 +1,13 @@
+/control/verbose 0
+/tracking/verbose 0
+/run/verbose 0
+/event/verbose 0
+/particle/process/verbose 0
+/process/verbose 0
+/process/em/verbose    0
+/process/had/verbose   0
+/process/eLoss/verbose 0
+
 /gun/particle proton
 /gun/energy 3 GeV
 /gun/position 0 0 -100 cm

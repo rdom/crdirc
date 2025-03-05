@@ -28,8 +28,8 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
     fEventNumber = eventNumber;
     fScintillationCounter = 0;
     fCerenkovCounter = 0;
-  }
-
+  }  
+  
   G4Track *track = step->GetTrack();
   if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) return;
  
@@ -44,8 +44,7 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
   
   TString aname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
   TString bname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
-
-
+ 
   if (fRunType == 11 || fRunType == 1) {  
     if (fRunType == 11 && aname == "wBar" && bname == "wOpticalGrease") {
       G4ThreeVector dir = step->GetPreStepPoint()->GetMomentum();
