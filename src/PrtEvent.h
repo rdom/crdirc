@@ -19,6 +19,9 @@ class PrtEvent : public TObject {
   PrtEvent();
   ~PrtEvent(){};
 
+  void Print() const;
+
+
   void addHit(PrtHit hit) { fHitArray.push_back(hit); }
 
   // accessors
@@ -34,6 +37,16 @@ class PrtEvent : public TObject {
   TVector3 getT3Position() const { return fT3Position; }
   std::vector<PrtHit> getHits() { return fHitArray; }
 
+// T for tagger
+  Int_t getTPhoDet() const { return det_n_Pho; } //number of photons detected
+  Int_t getTPhoPro() const { return pro_n_Pho; } //number of photons produced
+  std::vector<Double_t> getTPhoEneDet() {return det_Ene_Pho; } //energy of the photons detected (actually the wavelength);
+  std::vector<Double_t> getTPhoEnePro() {return pro_Ene_Pho; } //energy of the photons produced (actually the wavelength);
+  std::vector<Int_t>    getParentIDDet() {return det_ParentID; } //parent ID of the detected photons
+   
+
+
+
   // mutators
   void setPid(Int_t v) { fPid = v; }
   void setTime(Double_t v) { fTime = v; }
@@ -46,6 +59,16 @@ class PrtEvent : public TObject {
   void setT2Position(TVector3 v) { fT2Position = v; }
   void setT3Position(TVector3 v) { fT3Position = v; }
 
+// T for tagger
+  void setTPhoDet(Int_t v) { det_n_Pho = v; } //number of photons detected
+  void setTPhoPro(Int_t v) { pro_n_Pho = v; } //number of photons produced
+  void setTPhoEneDet(std::vector<Double_t> v) { det_Ene_Pho = v; } //energy of the photons detected (actually the wavelength);
+  void setTPhoEnePro(std::vector<Double_t> v) { pro_Ene_Pho = v; } //energy of the photons produced (actually the wavelength);
+  void setParentIDDet(std::vector<Int_t> v) { det_ParentID = v; } //parent ID of the detected photons
+
+ 
+
+
  private:
   Int_t fPid;
   Double_t fTime;
@@ -57,6 +80,15 @@ class PrtEvent : public TObject {
   TVector3 fT1Position;
   TVector3 fT2Position;
   TVector3 fT3Position;
+
+
+
+  // I should change the name of the variables to be more descriptive (CA)
+Int_t det_n_Pho;
+Int_t pro_n_Pho;
+std::vector<Int_t> det_ParentID; 
+std::vector<Double_t> det_Ene_Pho; //energy of the photons detected (actually the wavelength);
+std::vector<Double_t> pro_Ene_Pho; //energy of the photons produced (actually the wavelength);
 
   std::vector<PrtHit> fHitArray;
 

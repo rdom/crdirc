@@ -187,6 +187,11 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   // create a messenger for this class
   fGeomMessenger = new PrtDetectorConstructionMessenger(this);
   fRotAngle = 0;
+
+
+  TaggerCreator = new TaggerDetectorConstruction();
+
+
 }
 
 PrtDetectorConstruction::~PrtDetectorConstruction() {}
@@ -233,7 +238,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4Box *gCeiling = new G4Box("gCeiling", 1500, 1500, 0.5 * 610);
   lCeiling = new G4LogicalVolume(gCeiling, ConcreteMaterial, "lCeiling", 0, 0, 0);
   
-  new G4PVPlacement(0, G4ThreeVector(0, 0, -1000), lCeiling, "wCeiling", lExpHall, false, 0);
+  //new G4PVPlacement(0, G4ThreeVector(0, 0, -1000), lCeiling, "wCeiling", lExpHall, false, 0);
+  new G4PVPlacement(0, G4ThreeVector(0, 0, -500), lCeiling, "wCeiling", lExpHall, false, 0);
   new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + 1300), lTracker1, "wTracker1", lExpHall, 0, 0);
   new G4PVPlacement(0, G4ThreeVector(0, 0, dircz + 300), lTracker2, "wTracker2", lExpHall, 0, 0);
   new G4PVPlacement(0, G4ThreeVector(0, 0, dircz -400), lTracker3, "wTracker3", lExpHall, 0, 0);
@@ -898,7 +904,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
                          0.9134, 0.9105, 0.9072, 0.9020, 0.8964, 0.8918, 0.8875, 0.8809, 0.8736,
                          0.8669, 0.8595, 0.8518, 0.8436, 0.8349, 0.8256, 0.8158, 0.8102};
 
-  // UV enhanced aluminium mirror
+  // UV enhanced aluminium mirror  TaggerCreator = new TaggerDetectorConstruction();
   double mirrReflUv[] = {
     0.7736, 0.7975, 0.8190, 0.8401, 0.8621, 0.8836, 0.9011, 0.9116, 0.9210, 0.9261, 0.9275, 0.9282,
     0.9283, 0.9270, 0.9254, 0.9235, 0.9210, 0.9178, 0.9144, 0.9108, 0.9068, 0.9027, 0.8984, 0.8940,
@@ -923,6 +929,19 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   MirrorOpSurface->SetMaterialPropertiesTable(MirrorMPT);
   new G4LogicalSkinSurface("MirrorSurface", lMirror, MirrorOpSurface);
+
+
+
+
+
+
+
+G4cout<<"BUILDING TAGGER DETECTOR CONSTRUCTION"<<G4endl;
+  // TAGGER
+
+  TaggerCreator ->BuildTagger(lExpHall);
+
+
 
   SetVisualization();
 
@@ -1317,6 +1336,10 @@ void PrtDetectorConstruction::ConstructSDandField() {
   PrtBarSD *barSD = new PrtBarSD("BarSD", "BarHitsCollection", 0);
   G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
   SetSensitiveDetector("lBar", barSD);
+
+
+  G4cout<< "TaggerCreator::ConstructSDandField() - Sensitive detectors created" << G4endl;
+  TaggerCreator ->ConstructSDandField();
 
   // Magnetic field
 }

@@ -29,6 +29,10 @@ class PrtStackingAction : public G4UserStackingAction {
   TGraph *fDetEff[3];
   int fQEtype;
   int fRunType;
+
+  int tCerenkovCounter;
+  std::vector<double> tEnePho; // t for tagger, energy of the photons produced in eV
+  G4String CherenkovVolume;
 };
 
 #endif
