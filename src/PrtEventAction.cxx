@@ -69,7 +69,7 @@ int nhit = hc->GetSize();
 
 for (unsigned long i = 0; i < nhit; ++i)
   {
-   TaggerPMTHit *hit = static_cast<TaggerPMTHit*>(hc->GetHit(i));
+   PrtTaggerPmtHit *hit = static_cast<PrtTaggerPmtHit*>(hc->GetHit(i));
     
    EnePhoDet.push_back(hit -> GetEdep());
 

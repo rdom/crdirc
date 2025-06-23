@@ -8,14 +8,14 @@
 #define PrtEventAction_h 1
 
 #include "G4UserEventAction.hh"
+#include "G4SDManager.hh"
+#include "G4VHitsCollection.hh"
+#include "G4Exception.hh"
 
 #include "TGraph.h"
 #include "TRandom.h"
 
-#include "G4SDManager.hh"
-#include "G4VHitsCollection.hh"
-#include "G4Exception.hh"
-#include "TaggerPMTHit.h"
+#include "PrtTaggerPmtHit.h"
 
 #include <vector>
 

@@ -188,10 +188,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fGeomMessenger = new PrtDetectorConstructionMessenger(this);
   fRotAngle = 0;
 
-
-  TaggerCreator = new TaggerDetectorConstruction();
-
-
+  fTaggerCreator = new PrtTaggerDetectorConstruction();
 }
 
 PrtDetectorConstruction::~PrtDetectorConstruction() {}
@@ -237,6 +234,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   // ceiling
   G4Box *gCeiling = new G4Box("gCeiling", 1500, 1500, 0.5 * 610);
   lCeiling = new G4LogicalVolume(gCeiling, ConcreteMaterial, "lCeiling", 0, 0, 0);
+
+  // Cherenkov Tagger
+  fTaggerCreator->BuildTagger(lExpHall);
   
   //new G4PVPlacement(0, G4ThreeVector(0, 0, -1000), lCeiling, "wCeiling", lExpHall, false, 0);
   new G4PVPlacement(0, G4ThreeVector(0, 0, -500), lCeiling, "wCeiling", lExpHall, false, 0);
@@ -930,19 +930,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   MirrorOpSurface->SetMaterialPropertiesTable(MirrorMPT);
   new G4LogicalSkinSurface("MirrorSurface", lMirror, MirrorOpSurface);
 
-
-
-
-
-
-
-G4cout<<"BUILDING TAGGER DETECTOR CONSTRUCTION"<<G4endl;
-  // TAGGER
-
-  TaggerCreator ->BuildTagger(lExpHall);
-
-
-
   SetVisualization();
 
   return wExpHall;
@@ -1337,9 +1324,7 @@ void PrtDetectorConstruction::ConstructSDandField() {
   G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
   SetSensitiveDetector("lBar", barSD);
 
-
-  G4cout<< "TaggerCreator::ConstructSDandField() - Sensitive detectors created" << G4endl;
-  TaggerCreator ->ConstructSDandField();
+  fTaggerCreator->ConstructSDandField();
 
   // Magnetic field
 }

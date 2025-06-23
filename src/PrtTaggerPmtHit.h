@@ -1,5 +1,5 @@
-#ifndef TaggerPMTHit_h
-#define TaggerPMTHit_h 1
+#ifndef PrtTaggerPmtHit_h
+#define PrtTaggerPmtHit_h 1
 
 #include "G4VHit.hh"
 #include "G4THitsCollection.hh"
@@ -9,16 +9,16 @@
 
 
 
-class TaggerPMTHit : public G4VHit
+class PrtTaggerPmtHit : public G4VHit
 {
 public:
-  TaggerPMTHit() = default;
-  TaggerPMTHit(G4int layerID);
-  TaggerPMTHit(const TaggerPMTHit &right) = default;
-  ~TaggerPMTHit() override = default;
+  PrtTaggerPmtHit() = default;
+  PrtTaggerPmtHit(G4int layerID);
+  PrtTaggerPmtHit(const PrtTaggerPmtHit &right) = default;
+  ~PrtTaggerPmtHit() override = default;
 
-  TaggerPMTHit& operator=(const TaggerPMTHit &right) = default;
-  G4bool operator==(const TaggerPMTHit &right) const;
+  PrtTaggerPmtHit& operator=(const PrtTaggerPmtHit &right) = default;
+  G4bool operator==(const PrtTaggerPmtHit &right) const;
 
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);
@@ -71,28 +71,28 @@ private:
   
 };
 
-using TaggerPMTHitsCollection = G4THitsCollection<TaggerPMTHit>;
+using PrtTaggerPmtHitsCollection = G4THitsCollection<PrtTaggerPmtHit>;
 
-extern G4ThreadLocal G4Allocator<TaggerPMTHit>* TaggerPMTHitAllocator;
+extern G4ThreadLocal G4Allocator<PrtTaggerPmtHit>* PrtTaggerPmtHitAllocator;
 
-inline void* TaggerPMTHit::operator new(size_t)
+inline void* PrtTaggerPmtHit::operator new(size_t)
 {
-  if (!TaggerPMTHitAllocator) {
-    TaggerPMTHitAllocator = new G4Allocator<TaggerPMTHit>;
+  if (!PrtTaggerPmtHitAllocator) {
+    PrtTaggerPmtHitAllocator = new G4Allocator<PrtTaggerPmtHit>;
   }
-  return (void*)TaggerPMTHitAllocator->MallocSingle();
+  return (void*)PrtTaggerPmtHitAllocator->MallocSingle();
 }
 
-inline void TaggerPMTHit::operator delete(void* aHit)
+inline void PrtTaggerPmtHit::operator delete(void* aHit)
 {
-  TaggerPMTHitAllocator->FreeSingle((TaggerPMTHit*) aHit);
+  PrtTaggerPmtHitAllocator->FreeSingle((PrtTaggerPmtHit*) aHit);
 }
 
-inline G4double TaggerPMTHit::GetEdep() const {
+inline G4double PrtTaggerPmtHit::GetEdep() const {
   return fEdep;
 }
 
-inline void TaggerPMTHit::Add(G4double de)
+inline void PrtTaggerPmtHit::Add(G4double de)
 {
   // G4cout<<"fEdep (1): "<<fEdep<<G4endl;
   //  G4cout<<"de: "<<de<<G4endl;

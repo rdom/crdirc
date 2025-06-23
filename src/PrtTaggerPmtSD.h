@@ -3,7 +3,7 @@
 
 #include "G4VSensitiveDetector.hh"
 
-#include "TaggerPMTHit.h"
+#include "PrtTaggerPmtHit.h"
 
 #include <vector>
 
@@ -22,7 +22,7 @@ public:
   void   EndOfEvent(G4HCofThisEvent* hitCollection) override;
 
 private:
-  TaggerPMTHitsCollection* fHitsCollection = nullptr;
+  PrtTaggerPmtHitsCollection* fHitsCollection = nullptr;
   G4int fHCID = -1;
 };
 
