@@ -154,13 +154,38 @@ PrtStackingAction::~PrtStackingAction() {}
 
 G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aTrack) {
 
+ G4VPhysicalVolume* currentVolume = aTrack->GetVolume();
+
+
+ // Stupid pointer could be null, so check it 
+ if (currentVolume) {
+    G4String volumeName = currentVolume->GetName();
+   // G4cout<< "CherenkovVolume: " << volumeName <<G4endl;
+    CherenkovVolume = aTrack->GetVolume()->GetName();
+}
+
+
+
+
   if (aTrack->GetDefinition() ==
-      G4OpticalPhoton::OpticalPhotonDefinition()) { // particle is optical photon
-    if (aTrack->GetParentID() > 0) {                // particle is secondary
-      if (aTrack->GetCreatorProcess()->GetProcessName() == "Scintillation") fScintillationCounter++;
-      if (aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov") fCerenkovCounter++;
+    G4OpticalPhoton::OpticalPhotonDefinition()) 
+    { // particle is optical photon
+      if (aTrack->GetParentID() > 0) 
+      {                // particle is secondary
+        if (aTrack->GetCreatorProcess()->GetProcessName() == "Scintillation") fScintillationCounter++;
+        if (aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov") 
+        {
+          fCerenkovCounter++;
+          if (CherenkovVolume == "Gas_phy") 
+          {
+            tCerenkovCounter++; // t for tagger (CA)
+            //Originally photon energy was in eV. I think Roman removed all the dependency of external libraries
+            // that means, that now it is in MeV. Also the tagger detector must be checked to remove the dependencies on the units
+            tEnePho.push_back(aTrack->GetTotalEnergy());
+          }
+        }
+      }
     }
-  }
 
   if (fRunType == 5) {
     G4String ParticleName =
@@ -199,6 +224,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
   return fUrgent;
 }
 
+
 void PrtStackingAction::NewStage() {
   int runtype = PrtManager::Instance()->getRun()->getRunType();
   auto e = PrtManager::Instance()->getEvent();
@@ -206,11 +232,23 @@ void PrtStackingAction::NewStage() {
   bool good = (e->getT1Position().Z() < -1 && e->getT2Position().Z() < -1);
   
   int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+
   if (eventNumber % 1 == 0 && (runtype == 0 || runtype == 5) && good ) std::cout << "Event # " << eventNumber  << " # Cherenkov photons:  " << fCerenkovCounter;
   else if (eventNumber % 1000 == 0 && runtype != 0) std::cout << "Event # " << eventNumber  << " # Cherenkov photons:  " << fCerenkovCounter ;
+
+  PrtEvent* event = PrtManager::Instance()->getEvent();
+  event-> setTPhoPro(tCerenkovCounter);
+  event-> setTPhoEnePro(tEnePho);
+
+
 }
 
 void PrtStackingAction::PrepareNewEvent() {
   fScintillationCounter = 0;
   fCerenkovCounter = 0;
+  CherenkovVolume = "";
+  tCerenkovCounter = 0;
+  tEnePho.clear();  
+
+
 }

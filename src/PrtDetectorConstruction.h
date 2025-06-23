@@ -15,6 +15,8 @@
 #include "PrtRun.h"
 #include "PrtDetectorConstructionMessenger.h"
 
+#include "TaggerDetectorConstruction.h"
+
 class PrtDetectorConstructionMessenger;
 
 class PrtDetectorConstruction : public G4VUserDetectorConstruction {
@@ -93,6 +95,12 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   G4RotationMatrix *fPrtRot;
   PrtDetectorConstructionMessenger *fGeomMessenger;
   double *fQuantumEfficiency;
+
+
+ TaggerDetectorConstruction *TaggerCreator;
+
+
+
 };
 
 #endif
