@@ -48,9 +48,6 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   fPhysList = frun->getPhysList();
   fTimeRes = frun->getTimeSigma();  
   fTimeCut = frun->getTimeCut();
-
-  std::cout << "fRadiatorL " << fRadiatorL << std::endl;
-  
   
   if(fMethod == 20) {
     fRingFit = true;
@@ -739,7 +736,7 @@ void PrtReco::Run(int start, int end) {
   { // Cherenkov track resolution
     if (fMethod == 3) {
 
-      auto r = fCtr->Fit("gaus", "SQ", "", -5, 5);
+      auto r = fCtr->Fit("gaus", "SQ", "", -10, 10);
       ctr_sigma = r->Parameter(2);
       ctr_err = r->ParError(2);
 
@@ -790,7 +787,7 @@ void PrtReco::Run(int start, int end) {
     tree.Branch("epi_rejection2", &epi_rejection2, "epi_rejection2/D");
     tree.Branch("epi_rejection3", &epi_rejection3, "epi_rejection3/D");
 
-    tree.Branch("ctr_sigma", &ctr_sigma, "ctr_sigma/D");
+    tree.Branch("ctr", &ctr_sigma, "ctr_sigma/D");
     tree.Branch("ctr_err", &ctr_err, "ctr_err/D");
 
     tree.Fill();
@@ -1319,10 +1316,11 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
       }
     }
     //==================================================
-    
+
     int mcp = hit.getPmt();
     int pix = hit.getPixel();
     int ch = hit.getChannel();
+    if (pix < 0 || pix >= frun->getNpix()) continue;
 
     TVector3 dir, dird;
     double lenz = 0.5 * fRadiatorL - event->getPosition().Z() + gRandom->Uniform(-5, 5);
@@ -1394,7 +1392,7 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
         tangle += cor[mcp].ca; // per-PMT angle correction;
 
         if (fabs(tdiff) < 2 && fPhysList < 10)
-          tangle -= fChromCor->Eval(fTheta) * (hittime_nc - luttime) / len; // chromatic correction
+          tangle -= fChromCor->Eval(fTheta) * 0.75 * (hittime_nc - luttime) / len; // chromatic correction
 
         if (fabs(tdiff) > fTimeCut + luttime * 0.035) continue;
 

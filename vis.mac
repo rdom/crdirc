@@ -149,7 +149,7 @@
 #/vis/open VRML2FILE
 #/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts false
 /vis/ogl/set/displayListLimit 5000000
-/vis/scene/endOfEventAction accumulate 200
+/vis/scene/endOfEventAction accumulate 1000
 
 # #for lut visualization
 # /vis/scene/endOfEventAction accumulate 1000000
